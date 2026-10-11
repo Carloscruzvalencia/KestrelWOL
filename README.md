@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo-banner.png" alt="KestrelWOL Banner" width="720" />
+<img src="assets/logo-banner.png" alt="KestrelWOL Banner" width="260" />
 
 # KestrelWOL
 ### Industrial Remote Power, Network Fleet Management & Subnet Automation
