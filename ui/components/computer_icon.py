@@ -22,7 +22,7 @@ class ComputerIconComponent(ctk.CTkCanvas):
     def __init__(
         self,
         parent,
-        size: Tuple[int, int] = (54, 46),
+        size: Tuple[int, int] = (48, 42),
         bg_color: str = BG_CARD,
         **kwargs
     ):
@@ -35,6 +35,7 @@ class ComputerIconComponent(ctk.CTkCanvas):
             bd=0,
             **kwargs
         )
+        self._size = size
         self._current_state = "pending"
         self._bg_color = bg_color
         self.draw_icon("pending")
@@ -49,25 +50,63 @@ class ComputerIconComponent(ctk.CTkCanvas):
         self.delete("all")
         cfg = STATUS_COLORS.get(state, STATUS_COLORS["pending"])
 
-        # Stand / Peana del monitor
-        self.create_rectangle(24, 34, 30, 40, fill="#475569", outline="")
-        self.create_rectangle(17, 40, 37, 43, fill="#64748b", outline="")
+        w, h = self._size
 
-        # Carcasa y Pantalla
+        # Margen de seguridad estricto para evitar recortes del trazo en el borde del Canvas
+        pad_x = 4
+        pad_top = 4
+        screen_w = w - (2 * pad_x)
+        screen_h = int(h * 0.58)
+
+        x1 = pad_x
+        y1 = pad_top
+        x2 = x1 + screen_w
+        y2 = y1 + screen_h
+
+        cx = (x1 + x2) // 2
+        cy = (y1 + y2) // 2
+
+        # Stand / Peana del monitor
+        stand_w = 6
+        stand_top = y2
+        stand_bot = min(h - 5, stand_top + 6)
+        self.create_rectangle(
+            cx - stand_w // 2, stand_top,
+            cx + stand_w // 2, stand_bot,
+            fill="#475569", outline=""
+        )
+
+        base_w = int(screen_w * 0.52)
+        base_h = 3
+        self.create_rectangle(
+            cx - base_w // 2, stand_bot,
+            cx + base_w // 2, stand_bot + base_h,
+            fill="#64748b", outline=""
+        )
+
+        # Carcasa y Pantalla (marco cerrado de 4 lados garantizado)
         fill_color = cfg["icon_fill"]
         outline_color = cfg["icon_outline"]
+        self.create_rectangle(x1, y1, x2, y2, fill=fill_color, outline=outline_color, width=2)
 
+        # Símbolos interiores centrados
         if state == "online":
-            self.create_rectangle(5, 5, 49, 34, fill=fill_color, outline=outline_color, width=2)
-            self.create_line(16, 19, 24, 27, 38, 12, fill=outline_color, width=2.5, capstyle=tk.ROUND, joinstyle=tk.ROUND)
+            self.create_line(
+                cx - 7, cy,
+                cx - 2, cy + 5,
+                cx + 7, cy - 4,
+                fill=outline_color,
+                width=2.5,
+                capstyle=tk.ROUND,
+                joinstyle=tk.ROUND
+            )
         elif state == "offline":
-            self.create_rectangle(5, 5, 49, 34, fill=fill_color, outline=outline_color, width=2)
-            self.create_line(19, 12, 35, 26, fill=outline_color, width=2.5, capstyle=tk.ROUND)
-            self.create_line(19, 26, 35, 12, fill=outline_color, width=2.5, capstyle=tk.ROUND)
+            offset = 5
+            self.create_line(cx - offset, cy - offset, cx + offset, cy + offset, fill=outline_color, width=2.5, capstyle=tk.ROUND)
+            self.create_line(cx - offset, cy + offset, cx + offset, cy - offset, fill=outline_color, width=2.5, capstyle=tk.ROUND)
         elif state == "error":
-            self.create_rectangle(5, 5, 49, 34, fill=fill_color, outline=outline_color, width=2)
-            self.create_polygon(27, 9, 16, 28, 38, 28, fill=outline_color, outline="#b45309")
-            self.create_text(27, 21, text="!", fill="#1e293b", font=("Segoe UI", 10, "bold"))
+            poly = [cx, cy - 6, cx - 7, cy + 6, cx + 7, cy + 6]
+            self.create_polygon(poly, fill=outline_color, outline="#b45309")
+            self.create_text(cx, cy + 1, text="!", fill="#1e293b", font=("Segoe UI", 8, "bold"))
         else:  # pending
-            self.create_rectangle(5, 5, 49, 34, fill=fill_color, outline=outline_color, width=2)
-            self.create_text(27, 19, text="⋯", fill="#94a3b8", font=("Segoe UI", 13, "bold"))
+            self.create_text(cx, cy, text="⋯", fill="#94a3b8", font=("Segoe UI", 11, "bold"))
