@@ -5,13 +5,13 @@
 # KestrelWOL
 ### Industrial Remote Power, Network Fleet Management & Subnet Automation
 
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-5847eb.svg)](https://www.python.org/)
-[![OS](https://img.shields.io/badge/OS-Windows%2010%20%7C%2011%20%7C%20Server-0078d4.svg)](https://microsoft.com)
-[![Architecture](https://img.shields.io/badge/CPU-x64%20%7C%20ARM64-f97316.svg)](#)
-[![Networking](https://img.shields.io/badge/protocol-Wake--on--LAN%20%28UDP%29-0284c7.svg)](#)
-[![Audit](https://img.shields.io/badge/audit%20trail-SHA--256%20Chained-10b981.svg)](#)
-[![License](https://img.shields.io/badge/license-MIT-0284c7.svg)](LICENSE)
-[![Pricing](https://img.shields.io/badge/cost-100%25%20Free%20%26%20Open%20Source-22c55e.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10_%7C_3.11_%7C_3.12-3776ab?logo=python&logoColor=white)](https://www.python.org/)
+[![Windows](https://img.shields.io/badge/Windows-10_%7C_11_%7C_Server-0078d4?logo=windows&logoColor=white)](https://microsoft.com)
+[![Architecture](https://img.shields.io/badge/Architecture-x64_%7C_ARM64-f97316)](#)
+[![Protocol](https://img.shields.io/badge/Protocol-Wake--on--LAN-0284c7)](#)
+[![Audit](https://img.shields.io/badge/Audit-SHA--256_Chained-10b981)](#)
+[![License](https://img.shields.io/badge/License-MIT-0284c7)](LICENSE)
+[![Cost](https://img.shields.io/badge/Cost-Free_and_Open_Source-22c55e)](LICENSE)
 
 <br/>
 
