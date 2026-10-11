@@ -7,9 +7,9 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10_%7C_3.11_%7C_3.12-3776ab?logo=python&logoColor=white)](https://www.python.org/)
 [![Windows](https://img.shields.io/badge/Windows-10_%7C_11_%7C_Server-0078d4?logo=windows&logoColor=white)](https://microsoft.com)
-[![Architecture](https://img.shields.io/badge/Architecture-x64_%7C_ARM64-f97316?logo=intel&logoColor=white)](#)
+[![CPU](https://img.shields.io/badge/CPU-x64_%7C_ARM64-f97316?logo=intel&logoColor=white)](#)
 [![Protocol](https://img.shields.io/badge/Protocol-Wake--on--LAN-0284c7?logo=wireshark&logoColor=white)](#)
-[![Audit](https://img.shields.io/badge/Audit-SHA--256_Chained-10b981?logo=securityscorecard&logoColor=white)](#)
+[![Audit](https://img.shields.io/badge/Audit-SHA--256_Chained-10b981?logo=letsencrypt&logoColor=white)](#)
 [![License](https://img.shields.io/badge/License-MIT-0284c7?logo=opensourceinitiative&logoColor=white)](LICENSE)
 [![Cost](https://img.shields.io/badge/Cost-Free_and_Open_Source-22c55e?logo=github&logoColor=white)](LICENSE)
 
