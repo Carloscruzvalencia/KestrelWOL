@@ -96,6 +96,27 @@ python cli.py --import-csv "inventario.csv"
 
 ---
 
+## 🧪 Pruebas y Verificación del Sistema (Test Suite)
+
+Para que desarrolladores y administradores puedan validar de forma instantánea la integridad de la aplicación y sus componentes sin dependencias adicionales:
+
+```bash
+# Ejecutar la suite completa con reporte formateado (< 1 segundo)
+python tests/run_tests.py
+
+# O mediante el descubridor estándar de Python:
+python -m unittest discover tests
+```
+
+### Componentes Verificados en la Suite:
+- **Red y WOL (`test_wol_service.py`)**: Sanitización regex de IPv4 y MAC, generación exacta del Magic Packet (102 bytes) y emisión UDP.
+- **Auditoría Forense (`test_audit_service.py`)**: Encadenamiento criptográfico SHA-256 (*hash chaining*) y consistencia anti-manipulación.
+- **Almacenamiento y CSV (`test_storage_service.py`)**: Normalización canónica de zonas y neutralización de inyecciones de fórmulas CSV (CWE-1236).
+- **Programador Horario (`test_scheduler_service.py`)**: Coincidencia de horas/días semanales y prevención de disparos duplicados.
+- **Detección de Sistema (`test_system_service.py`)**: Lectura de tabla ARP, filtrado de broadcasts/multicasts y exclusión de hosts ignorados.
+
+---
+
 ## 💬 Contacto
 
 Para consultas generales, propuestas de mejora o reportes de seguridad relacionados con **KestrelWOL**, puedes comunicarte directamente a través de:
