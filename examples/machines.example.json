@@ -1,8 +1,8 @@
 [
     {
         "name": "Equipo-Ejemplo-1",
-        "ip": "192.168.1.100",
-        "mac": "AA:BB:CC:DD:EE:01",
+        "ip": "192.0.2.100",
+        "mac": "00:00:5E:00:53:01",
         "zone": "Zona A",
         "schedule": {
             "enabled": false,
@@ -18,8 +18,8 @@
     },
     {
         "name": "Equipo-Ejemplo-2",
-        "ip": "192.168.1.101",
-        "mac": "AA:BB:CC:DD:EE:02",
+        "ip": "192.0.2.101",
+        "mac": "00:00:5E:00:53:02",
         "zone": "Zona B",
         "schedule": {
             "enabled": false,

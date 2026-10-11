@@ -83,11 +83,11 @@ python cli.py --all --delay 0.50
 python cli.py --list
 
 # Escanear puertos y servicios abiertos en un host (RDP, SSH, WEB, VNC)
-python cli.py --check-services 192.168.1.50
+python cli.py --check-services <IP_EQUIPO>
 
 # Ordenar un apagado o reinicio preventivo remoto (30s)
-python cli.py --shutdown 192.168.1.50
-python cli.py --reboot 192.168.1.50
+python cli.py --shutdown <IP_EQUIPO>
+python cli.py --reboot <IP_EQUIPO>
 
 # Exportar o importar masivamente la base de datos a CSV
 python cli.py --export-csv "inventario.csv"

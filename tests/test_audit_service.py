@@ -22,8 +22,8 @@ class TestAuditService(unittest.TestCase):
         self.audit.log(
             action="TEST_ACTION_1",
             target_name="Host-Alpha",
-            ip="192.168.1.10",
-            mac="00:11:22:33:44:01",
+            ip="192.0.2.10",
+            mac="00:00:5E:00:53:01",
             status="SUCCESS",
             details="Test verification"
         )
@@ -34,8 +34,8 @@ class TestAuditService(unittest.TestCase):
         self.audit.log(
             action="TEST_ACTION_2",
             target_name="Host-Beta",
-            ip="192.168.1.20",
-            mac="00:11:22:33:44:02",
+            ip="192.0.2.20",
+            mac="00:00:5E:00:53:02",
             status="SUCCESS",
             details="Second verification"
         )
@@ -46,8 +46,8 @@ class TestAuditService(unittest.TestCase):
         previous_hash = self.audit._last_hash
         action = "CRYPTO_VERIFY"
         target_name = "Host-Gamma"
-        ip = "192.168.1.30"
-        mac = "00:11:22:33:44:03"
+        ip = "192.0.2.30"
+        mac = "00:00:5E:00:53:03"
         status = "SUCCESS"
         details = "Testing exact sha256 output"
 

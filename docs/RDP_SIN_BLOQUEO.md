@@ -65,7 +65,7 @@ Desde tu equipo, puedes conectarte directamente a la sesión activa mediante la 
    ```cmd
    mstsc /v:IP_DEL_EQUIPO /shadow:1 /control /noConsentPrompt
    ```
-   *(Sustituye `IP_DEL_EQUIPO` por la IP local del equipo, por ejemplo `192.168.1.50`).*
+   *(Sustituye `IP_DEL_EQUIPO` por la IP local del equipo, por ejemplo `192.0.2.50`).*
 
 > [!NOTE]
 > En la mayoría de equipos con Windows, el identificador de la pantalla física (sesión de consola) es `1`.  

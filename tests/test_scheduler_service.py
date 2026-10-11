@@ -25,8 +25,8 @@ class TestSchedulerService(unittest.TestCase):
 
         test_machine = {
             "name": "Servidor-App",
-            "ip": "192.168.1.10",
-            "mac": "00:11:22:33:44:55",
+            "ip": "192.0.2.10",
+            "mac": "00:00:5E:00:53:55",
             "zone": "Sistemas",
             "schedule": {
                 "enabled": True,
@@ -53,14 +53,14 @@ class TestSchedulerService(unittest.TestCase):
                     self.mock_wake_callback(machine)
 
             self.mock_wake_callback.assert_called_once_with(test_machine)
-            self.assertIn("00:11:22:33:44:55", self.scheduler._last_triggered)
+            self.assertIn("00:00:5E:00:53:55", self.scheduler._last_triggered)
 
     def test_schedule_does_not_trigger_when_disabled(self):
         fake_now = datetime.datetime(2026, 10, 12, 8, 30, 0)
         test_machine = {
             "name": "Servidor-App",
-            "ip": "192.168.1.10",
-            "mac": "00:11:22:33:44:55",
+            "ip": "192.0.2.10",
+            "mac": "00:00:5E:00:53:55",
             "schedule": {
                 "enabled": False,  # Desactivado
                 "time": "08:30",
@@ -80,8 +80,8 @@ class TestSchedulerService(unittest.TestCase):
         fake_now = datetime.datetime(2026, 10, 18, 8, 30, 0)
         test_machine = {
             "name": "Servidor-App",
-            "ip": "192.168.1.10",
-            "mac": "00:11:22:33:44:55",
+            "ip": "192.0.2.10",
+            "mac": "00:00:5E:00:53:55",
             "schedule": {
                 "enabled": True,
                 "time": "08:30",

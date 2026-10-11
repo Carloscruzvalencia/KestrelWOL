@@ -36,8 +36,8 @@ class TestStorageService(unittest.TestCase):
     def test_sanitize_csv_cell_safe_characters(self):
         safe_inputs = [
             "Servidor-01",
-            "192.168.1.100",
-            "00:11:22:33:44:55",
+            "192.0.2.100",
+            "00:00:5E:00:53:01",
             "Oficina Principal",
             "Normal text",
         ]
@@ -92,15 +92,15 @@ class TestStorageService(unittest.TestCase):
             machines_data = [
                 {
                     "name": "PC-Admin",
-                    "ip": "192.168.1.50",
-                    "mac": "00:11:22:33:44:01",
+                    "ip": "192.0.2.50",
+                    "mac": "00:00:5E:00:53:01",
                     "zone": "Sistemas",
                     "schedule": {"enabled": True, "time": "08:00", "days": [0, 1, 2, 3, 4]}
                 },
                 {
                     "name": "PC-Taller",
-                    "ip": "192.168.1.51",
-                    "mac": "00:11:22:33:44:02",
+                    "ip": "192.0.2.51",
+                    "mac": "00:00:5E:00:53:02",
                     "zone": "Taller",
                     "schedule": {"enabled": False, "time": "09:00", "days": []}
                 }
@@ -121,8 +121,8 @@ class TestStorageService(unittest.TestCase):
                     self.assertTrue(mock_save.called)
                     saved_machines = mock_save.call_args[0][0]
                     self.assertEqual(saved_machines[0]["name"], "PC-Admin")
-                    self.assertEqual(saved_machines[0]["ip"], "192.168.1.50")
-                    self.assertEqual(saved_machines[0]["mac"], "00:11:22:33:44:01")
+                    self.assertEqual(saved_machines[0]["ip"], "192.0.2.50")
+                    self.assertEqual(saved_machines[0]["mac"], "00:00:5e:00:53:01")
                     self.assertEqual(saved_machines[0]["zone"], "Sistemas")
                     self.assertTrue(saved_machines[0]["schedule"]["enabled"])
                     self.assertEqual(saved_machines[0]["schedule"]["days"], [0, 1, 2, 3, 4])

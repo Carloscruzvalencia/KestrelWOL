@@ -1,4 +1,4 @@
 name,ip,mac,zone,schedule_enabled,schedule_time,schedule_days
-Servidor-Principal,192.168.1.10,00:11:22:33:44:01,Servidores,true,07:30,0;1;2;3;4
-Puesto-Diseno-01,192.168.1.20,00:11:22:33:44:02,Oficina A,false,08:00,0;1;2;3;4
-Puesto-Taller,192.168.1.30,00:11:22:33:44:03,Taller,false,08:00,
+Servidor-Principal,192.0.2.10,00:00:5E:00:53:01,Servidores,true,07:30,0;1;2;3;4
+Puesto-Diseno-01,192.0.2.20,00:00:5E:00:53:02,Oficina A,false,08:00,0;1;2;3;4
+Puesto-Taller,192.0.2.30,00:00:5E:00:53:03,Taller,false,08:00,

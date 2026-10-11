@@ -17,7 +17,7 @@ class TestWolService(unittest.TestCase):
     # ---------------------------------------------------------
     def test_validate_ip_valid(self):
         valid_ips = [
-            "192.168.1.1",
+            "192.0.2.1",
             "10.0.0.1",
             "172.16.254.1",
             "127.0.0.1",
@@ -31,11 +31,11 @@ class TestWolService(unittest.TestCase):
     def test_validate_ip_invalid(self):
         invalid_ips = [
             "256.1.1.1",
-            "192.168.1",
-            "192.168.1.1.1",
+            "192.0.2",
+            "192.0.2.1.1",
             "abc.def.ghi.jkl",
-            "192.168.-1.1",
-            "192.168.1.999",
+            "192.0.2.-1",
+            "192.0.2.999",
             "",
             None,
         ]
@@ -48,11 +48,11 @@ class TestWolService(unittest.TestCase):
     # ---------------------------------------------------------
     def test_validate_mac_valid(self):
         valid_macs = [
-            "00:11:22:33:44:55",
-            "00-11-22-33-44-55",
+            "00:00:5E:00:53:01",
+            "00-00-5E-00-53-01",
             "aa:bb:cc:dd:ee:ff",
             "AA:BB:CC:DD:EE:FF",
-            "001122334455",
+            "00005E005301",
             "AABBCCDDEEFF",
         ]
         for mac in valid_macs:
@@ -76,7 +76,7 @@ class TestWolService(unittest.TestCase):
     # Construcción canónica del Magic Packet (102 bytes)
     # ---------------------------------------------------------
     def test_create_magic_packet_structure(self):
-        mac = "00:11:22:33:44:55"
+        mac = "00:00:5E:00:53:01"
         packet = self.wol.create_magic_packet(mac)
 
         # Longitud total estricta: 6 bytes de 0xFF + 16 repeticiones de 6 bytes MAC = 102 bytes
@@ -86,7 +86,7 @@ class TestWolService(unittest.TestCase):
         self.assertEqual(packet[:6], b"\xff" * 6)
 
         # Los siguientes 96 bytes deben ser 16 repeticiones del MAC
-        mac_raw = bytes.fromhex("001122334455")
+        mac_raw = bytes.fromhex("00005E005301")
         self.assertEqual(packet[6:], mac_raw * 16)
 
     def test_create_magic_packet_invalid_raises_value_error(self):
@@ -103,7 +103,7 @@ class TestWolService(unittest.TestCase):
         self.mock_audit.log.assert_called_once()
 
     def test_send_packet_rejects_invalid_ip(self):
-        success, msg = self.wol.send_packet("00:11:22:33:44:55", ip="999.999.999.999")
+        success, msg = self.wol.send_packet("00:00:5E:00:53:01", ip="999.999.999.999")
         self.assertFalse(success)
         self.assertIn("IP", msg)
         self.mock_audit.log.assert_called_once()
@@ -113,7 +113,7 @@ class TestWolService(unittest.TestCase):
         mock_sock_instance = MagicMock()
         mock_socket_cls.return_value = mock_sock_instance
 
-        success, msg = self.wol.send_packet("00:11:22:33:44:55", ip="192.168.1.50")
+        success, msg = self.wol.send_packet("00:00:5E:00:53:01", ip="192.0.2.50")
         self.assertTrue(success)
         self.assertTrue(mock_sock_instance.sendto.called)
 
