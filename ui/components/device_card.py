@@ -52,6 +52,7 @@ class DeviceCardComponent(ctk.CTkFrame):
         on_remote_control: Optional[Callable[[Dict[str, Any]], None]] = None,
         on_launch_rdp: Optional[Callable[[Dict[str, Any]], None]] = None,
         on_launch_ssh: Optional[Callable[[Dict[str, Any]], None]] = None,
+        show_network_info: bool = False,
         **kwargs
     ):
         super().__init__(
@@ -71,6 +72,7 @@ class DeviceCardComponent(ctk.CTkFrame):
         self.on_remote_control = on_remote_control
         self.on_launch_rdp = on_launch_rdp
         self.on_launch_ssh = on_launch_ssh
+        self._show_network_info = show_network_info
 
         self.audit = AuditService()
         self._build_ui()
@@ -122,7 +124,7 @@ class DeviceCardComponent(ctk.CTkFrame):
         self.lbl_status.pack(side=tk.LEFT, padx=(6, 0))
 
         # ======================================================================
-        # 2. CUERPO: Icono + IP/MAC + DIAGNÓSTICO EN VIVO (ESPACIO NEGRO)
+        # 2. CUERPO: Icono + IP/MAC Ocultables + DIAGNÓSTICO EN VIVO
         # ======================================================================
         body_frame = ctk.CTkFrame(self, fg_color="transparent")
         body_frame.pack(fill=tk.X, padx=12, pady=(0, 8))
@@ -133,27 +135,48 @@ class DeviceCardComponent(ctk.CTkFrame):
         info_box = ctk.CTkFrame(body_frame, fg_color=BG_CONTAINER_DARK, corner_radius=6)
         info_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Columna A: IP y MAC (visibles directamente)
+        # Columna A: IP y MAC (ocultas por defecto, clicables para alternar)
         text_subframe = ctk.CTkFrame(info_box, fg_color="transparent")
-        text_subframe.pack(side=tk.LEFT, fill=tk.Y, padx=8, pady=4)
+        text_subframe.pack(side=tk.LEFT, fill=tk.Y, padx=(8, 4), pady=4)
 
         self.lbl_ip = ctk.CTkLabel(
             text_subframe,
-            text=f"IP:   {self.machine.get('ip', 'N/A')}",
+            text="",
             font=FONTS["mono_data"],
             text_color=TEXT_PRIMARY,
-            anchor="w"
+            anchor="w",
+            cursor="hand2"
         )
         self.lbl_ip.pack(fill=tk.X)
+        self.lbl_ip.bind("<Button-1>", lambda e: self.toggle_network_visibility())
 
         self.lbl_mac = ctk.CTkLabel(
             text_subframe,
-            text=f"MAC:  {self.machine.get('mac', 'N/A')}",
+            text="",
             font=FONTS["mono_data"],
             text_color=TEXT_MUTED,
-            anchor="w"
+            anchor="w",
+            cursor="hand2"
         )
         self.lbl_mac.pack(fill=tk.X)
+        self.lbl_mac.bind("<Button-1>", lambda e: self.toggle_network_visibility())
+
+        # Botón Toggle Privacidad (Ver / Ocultar IP y MAC)
+        self.btn_toggle_network = ctk.CTkButton(
+            info_box,
+            text="👁️",
+            width=28,
+            height=28,
+            font=FONTS["caption_bold"],
+            fg_color="#1e293b",
+            hover_color="#334155",
+            text_color="#94a3b8",
+            corner_radius=4,
+            command=self.toggle_network_visibility
+        )
+        self.btn_toggle_network.pack(side=tk.LEFT, padx=(2, 6), pady=4)
+
+        self._update_network_display()
 
         # Columna B: Diagnóstico de Servicios de Red (En el espacio negro)
         diag_subframe = ctk.CTkFrame(info_box, fg_color="transparent")
@@ -450,3 +473,41 @@ class DeviceCardComponent(ctk.CTkFrame):
             messagebox.showinfo("Reinicio Ordenado", msg)
         else:
             messagebox.showerror("Error de Comunicación", msg)
+
+    # --------------------------------------------------------------------------
+    # PRIVACIDAD Y VISIBILIDAD DE RED (IP / MAC)
+    # --------------------------------------------------------------------------
+    def toggle_network_visibility(self) -> None:
+        """Alterna la visibilidad de la IP y MAC en la tarjeta."""
+        self._show_network_info = not self._show_network_info
+        self._update_network_display()
+
+    def set_network_visibility(self, visible: bool) -> None:
+        """Establece explícitamente si mostrar u ocultar la IP y MAC."""
+        self._show_network_info = visible
+        self._update_network_display()
+
+    def _update_network_display(self) -> None:
+        """Renderiza los datos reales o enmascarados de IP y MAC."""
+        raw_ip = self.machine.get("ip", "N/A")
+        raw_mac = self.machine.get("mac", "N/A")
+
+        if self._show_network_info:
+            self.lbl_ip.configure(text=f"IP:   {raw_ip}")
+            self.lbl_mac.configure(text=f"MAC:  {raw_mac}")
+            self.btn_toggle_network.configure(
+                text="🔒",
+                fg_color="#334155",
+                hover_color="#475569"
+            )
+        else:
+            masked_ip = "●●●.●●●.●●●.●●●" if raw_ip != "N/A" else "N/A"
+            masked_mac = "●●:●●:●●:●●:●●:●●" if raw_mac != "N/A" else "N/A"
+            self.lbl_ip.configure(text=f"IP:   {masked_ip}")
+            self.lbl_mac.configure(text=f"MAC:  {masked_mac}")
+            self.btn_toggle_network.configure(
+                text="👁️",
+                fg_color="#1e293b",
+                hover_color="#334155"
+            )
+

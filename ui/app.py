@@ -118,7 +118,8 @@ class WakeOnLanApp(ctk.CTk):
         self.zone_toolbar_view = ZoneToolbarView(
             self,
             on_zone_selected=self.handle_zone_selected,
-            on_wake_zone=self.handle_wake_zone
+            on_wake_zone=self.handle_wake_zone,
+            on_toggle_network=self.handle_toggle_network
         )
         self.zone_toolbar_view.pack(fill=tk.X, padx=16, pady=(0, 6))
 
@@ -443,6 +444,10 @@ class WakeOnLanApp(ctk.CTk):
             messagebox.showinfo("Exportación Exitosa", msg)
         else:
             messagebox.showerror("Error al Exportar", msg)
+
+    def handle_toggle_network(self) -> bool:
+        """Alterna la visualización de IPs y MACs en toda la cuadrícula de dispositivos."""
+        return self.device_grid_view.toggle_all_network_visibility()
 
     def _on_terms_accepted(self) -> None:
         user = SystemService.is_admin() and "admin" or "operator"

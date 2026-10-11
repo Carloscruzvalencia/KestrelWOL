@@ -33,6 +33,7 @@ class ZoneToolbarView(ctk.CTkFrame):
         parent,
         on_zone_selected: Optional[Callable[[str], None]] = None,
         on_wake_zone: Optional[Callable[[str], None]] = None,
+        on_toggle_network: Optional[Callable[[], bool]] = None,
         **kwargs
     ):
         super().__init__(
@@ -42,9 +43,11 @@ class ZoneToolbarView(ctk.CTkFrame):
         )
         self.on_zone_selected = on_zone_selected
         self.on_wake_zone = on_wake_zone
+        self.on_toggle_network = on_toggle_network
 
         self._active_zone = "Todos"
         self._zone_counts: Dict[str, int] = {"Todos": 0}
+        self._network_visible = False
 
         self.left_box = ctk.CTkFrame(self, fg_color="transparent")
         self.left_box.pack(side=tk.LEFT, fill=tk.Y)
@@ -118,7 +121,32 @@ class ZoneToolbarView(ctk.CTkFrame):
             command=lambda: self.on_wake_zone(self._active_zone) if self.on_wake_zone else None
         ).pack(side=tk.RIGHT)
 
+        # Botón Mostrar/Ocultar Red (IP y MAC) Globalmente
+        toggle_label = "🔒 Ocultar Red" if self._network_visible else "👁️ Ver Red"
+        self.btn_toggle_network = ctk.CTkButton(
+            self.right_box,
+            text=toggle_label,
+            font=FONTS["caption_bold"],
+            fg_color="#1e293b",
+            hover_color="#334155",
+            text_color="#94a3b8",
+            height=28,
+            corner_radius=6,
+            command=self._handle_toggle_network
+        )
+        self.btn_toggle_network.pack(side=tk.RIGHT, padx=(0, 8))
+
+    def _handle_toggle_network(self) -> None:
+        if self.on_toggle_network:
+            new_state = self.on_toggle_network()
+            self._network_visible = bool(new_state)
+            if hasattr(self, "btn_toggle_network") and self.btn_toggle_network:
+                self.btn_toggle_network.configure(
+                    text="🔒 Ocultar Red" if self._network_visible else "👁️ Ver Red"
+                )
+
     def _select_zone(self, zone_name: str) -> None:
         self._active_zone = zone_name
         if self.on_zone_selected:
             self.on_zone_selected(zone_name)
+

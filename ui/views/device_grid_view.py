@@ -51,6 +51,7 @@ class DeviceGridView(ctk.CTkScrollableFrame):
         self._cards: List[DeviceCardComponent] = []
         self._current_cols = 2
         self._last_devices: List[Dict[str, Any]] = []
+        self._show_network_info = False
 
         self.bind("<Configure>", self._on_configure)
 
@@ -100,10 +101,18 @@ class DeviceGridView(ctk.CTkScrollableFrame):
                 on_schedule=self.on_schedule_device,
                 on_remote_control=self.on_remote_control_device,
                 on_launch_rdp=self.on_launch_rdp,
-                on_launch_ssh=self.on_launch_ssh
+                on_launch_ssh=self.on_launch_ssh,
+                show_network_info=self._show_network_info
             )
             card.grid(row=row, column=col, padx=8, pady=8, sticky="nsew")
             self._cards.append(card)
+
+    def toggle_all_network_visibility(self) -> bool:
+        """Alterna la visibilidad de la IP y MAC en todas las tarjetas de la cuadrícula."""
+        self._show_network_info = not self._show_network_info
+        for card in self._cards:
+            card.set_network_visibility(self._show_network_info)
+        return self._show_network_info
 
     def update_device_status(self, ip: Optional[str], mac: Optional[str], status: str) -> None:
         """Actualiza el estado gráfico de una tarjeta específica de forma thread-safe."""
