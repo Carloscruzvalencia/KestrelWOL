@@ -1,0 +1,4 @@
+wakeonlan
+pystray
+Pillow
+customtkinter>=5.2.0
