@@ -1,6 +1,6 @@
 """
 Modal de Administración de IPs Ignoradas (ui/views/modals/ignored_modal.py)
-KestrelWOL - CustomTkinter
+KestrelWOL - CustomTkinter (Industrial Enterprise Dark Mode)
 """
 
 import tkinter as tk
@@ -10,16 +10,24 @@ import customtkinter as ctk
 
 from core.config import (
     ACCENT_EMERALD,
+    BG_BORDER,
+    BG_BORDER_BUTTON,
+    BG_BTN_SECONDARY,
     BG_CARD,
+    BG_CONTAINER_DARK,
     BG_DARK,
-    BG_INPUT,
+    BG_ROW,
+    BUTTON_PRIMARY_TEXT,
     FONTS,
     HOVER_EMERALD,
     HOVER_SECONDARY,
     MODAL_SIZES,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
 from services.storage_service import StorageService
+from ui.components.icons import get_icon
 
 
 class IgnoredModal(ctk.CTkToplevel):
@@ -47,30 +55,45 @@ class IgnoredModal(ctk.CTkToplevel):
         self.load_list()
 
     def _build_ui(self) -> None:
-        header = ctk.CTkFrame(self, fg_color=BG_CARD, corner_radius=8)
+        header = ctk.CTkFrame(
+            self,
+            fg_color=BG_CARD,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS
+        )
         header.pack(fill=tk.X, padx=16, pady=(16, 10))
 
         ctk.CTkLabel(
             header,
-            text="🚫 Dispositivos e IPs Ignoradas",
+            text="  Dispositivos e IPs Ignoradas",
+            image=get_icon("eye_off", TEXT_PRIMARY, 15),
+            compound="left",
             font=FONTS["title_section"],
             text_color=TEXT_PRIMARY
         ).pack(side=tk.LEFT, padx=14, pady=10)
 
-        card = ctk.CTkFrame(self, fg_color=BG_CARD, corner_radius=8)
+        card = ctk.CTkFrame(
+            self,
+            fg_color=BG_CARD,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS
+        )
         card.pack(fill=tk.BOTH, expand=True, padx=16, pady=(0, 10))
 
         self.listbox = tk.Listbox(
             card,
-            bg="#0f172a",
+            bg=BG_CONTAINER_DARK,
             fg=TEXT_PRIMARY,
-            selectbackground="#3b82f6",
-            selectforeground=TEXT_PRIMARY,
-            font=("Segoe UI", 10),
+            selectbackground=BG_ROW,
+            selectforeground=ACCENT_EMERALD,
+            font=FONTS["mono_data"],
             bd=0,
-            highlightthickness=0,
-            padx=10,
-            pady=10
+            highlightthickness=1,
+            highlightbackground=BG_BORDER,
+            highlightcolor=BG_BORDER,
+            activestyle="none"
         )
         self.listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
@@ -81,32 +104,40 @@ class IgnoredModal(ctk.CTkToplevel):
             footer,
             text="Cerrar",
             font=FONTS["body_normal"],
-            fg_color=BG_INPUT,
+            fg_color=BG_BTN_SECONDARY,
             hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            height=30,
+            corner_radius=UI_RADIUS,
             command=self.destroy
         ).pack(side=tk.LEFT)
 
         ctk.CTkButton(
             footer,
-            text="✅ Dejar de Ignorar",
+            text="Dejar de Ignorar",
+            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
+            compound="left",
             font=FONTS["body_bold"],
             fg_color=ACCENT_EMERALD,
             hover_color=HOVER_EMERALD,
-            text_color=TEXT_PRIMARY,
+            text_color=BUTTON_PRIMARY_TEXT,
+            height=30,
+            corner_radius=UI_RADIUS,
             command=self._unignore_selected
         ).pack(side=tk.RIGHT)
 
     def load_list(self) -> None:
         self.listbox.delete(0, tk.END)
         for ip in self.storage.load_ignored_ips():
-            self.listbox.insert(tk.END, ip)
+            self.listbox.insert(tk.END, f"  {ip}")
 
     def _unignore_selected(self) -> None:
         sel = self.listbox.curselection()
         if not sel:
             return
-        ip = self.listbox.get(sel[0])
+        ip = self.listbox.get(sel[0]).strip()
         ignored = self.storage.load_ignored_ips()
         if ip in ignored:
             ignored.remove(ip)

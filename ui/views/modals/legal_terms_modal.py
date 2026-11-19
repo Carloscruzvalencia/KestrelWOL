@@ -1,6 +1,6 @@
 """
 Modal de Términos Legales y Exoneración de Responsabilidad (ui/views/modals/legal_terms_modal.py)
-KestrelWOL - CustomTkinter
+KestrelWOL - CustomTkinter (Industrial Enterprise Dark Mode)
 """
 
 import sys
@@ -11,19 +11,24 @@ import customtkinter as ctk
 from core.config import (
     ACCENT_EMERALD,
     ACCENT_ROSE,
+    BG_BORDER,
+    BG_BORDER_BUTTON,
+    BG_BTN_SECONDARY,
     BG_CARD,
     BG_CONTAINER_DARK,
     BG_DARK,
-    BG_INPUT,
+    BUTTON_PRIMARY_TEXT,
     FONTS,
     HOVER_EMERALD,
-    HOVER_ROSE,
     HOVER_SECONDARY,
     LEGAL_TERMS_FULL_TEXT,
     MODAL_SIZES,
     TEXT_MUTED,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
+from ui.components.icons import get_icon
 
 
 class LegalTermsModal(ctk.CTkToplevel):
@@ -43,7 +48,7 @@ class LegalTermsModal(ctk.CTkToplevel):
         self.on_accept = on_accept
 
         w, h = MODAL_SIZES["legal_terms"]
-        self.title("⚖️ Términos de Uso, Seguridad Industrial y Exoneración Legal")
+        self.title("Términos de Uso, Seguridad Industrial y Exoneración Legal")
         self.geometry(f"{w}x{h}")
         self.configure(fg_color=BG_DARK)
 
@@ -57,12 +62,20 @@ class LegalTermsModal(ctk.CTkToplevel):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        header = ctk.CTkFrame(self, fg_color=BG_CARD, corner_radius=8)
+        header = ctk.CTkFrame(
+            self,
+            fg_color=BG_CARD,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS
+        )
         header.pack(fill=tk.X, padx=16, pady=(16, 10))
 
         ctk.CTkLabel(
             header,
-            text="⚖️ Marco Normativo, Seguridad y Exoneración de Responsabilidad",
+            text="  Marco Normativo, Seguridad y Exoneración de Responsabilidad",
+            image=get_icon("shield", TEXT_PRIMARY, 15),
+            compound="left",
             font=FONTS["title_section"],
             text_color=TEXT_PRIMARY,
             anchor="w"
@@ -81,8 +94,10 @@ class LegalTermsModal(ctk.CTkToplevel):
             self,
             font=FONTS["mono_log"],
             fg_color=BG_CONTAINER_DARK,
-            text_color=TEXT_PRIMARY,
-            corner_radius=8
+            border_width=1,
+            border_color=BG_BORDER,
+            text_color=TEXT_SECONDARY,
+            corner_radius=UI_RADIUS
         )
         txt_box.pack(fill=tk.BOTH, expand=True, padx=16, pady=(0, 10))
         txt_box.insert("1.0", LEGAL_TERMS_FULL_TEXT)
@@ -101,6 +116,8 @@ class LegalTermsModal(ctk.CTkToplevel):
                 text_color=TEXT_PRIMARY,
                 fg_color=ACCENT_EMERALD,
                 hover_color=HOVER_EMERALD,
+                border_color=BG_BORDER_BUTTON,
+                corner_radius=4,
                 command=self._on_check_toggle
             )
             chk.pack(anchor="w", pady=(0, 10))
@@ -110,22 +127,33 @@ class LegalTermsModal(ctk.CTkToplevel):
 
             ctk.CTkButton(
                 btn_box,
-                text="❌ Rechazar y Salir",
+                text="Rechazar y Salir",
+                image=get_icon("close", TEXT_MUTED, 14),
+                compound="left",
                 font=FONTS["body_normal"],
-                fg_color=ACCENT_ROSE,
-                hover_color=HOVER_ROSE,
-                text_color="#ffffff",
+                fg_color=BG_BTN_SECONDARY,
+                hover_color=ACCENT_ROSE,
+                border_width=1,
+                border_color=BG_BORDER_BUTTON,
+                text_color=TEXT_MUTED,
+                height=30,
+                corner_radius=UI_RADIUS,
                 command=self._reject_and_exit
             ).pack(side=tk.LEFT)
 
-            # Botón desactivado por defecto con fondo neutro y texto legible
             self.btn_accept = ctk.CTkButton(
                 btn_box,
-                text="✅ Aceptar y Continuar",
+                text="Aceptar y Continuar",
+                image=get_icon("check", TEXT_MUTED, 14),
+                compound="left",
                 font=FONTS["body_bold"],
-                fg_color=BG_INPUT,
+                fg_color=BG_BTN_SECONDARY,
                 hover_color=HOVER_EMERALD,
-                text_color="#94a3b8",
+                border_width=1,
+                border_color=BG_BORDER_BUTTON,
+                text_color=TEXT_MUTED,
+                height=30,
+                corner_radius=UI_RADIUS,
                 state="disabled",
                 command=self._accept
             )
@@ -135,9 +163,13 @@ class LegalTermsModal(ctk.CTkToplevel):
                 footer,
                 text="Cerrar",
                 font=FONTS["body_normal"],
-                fg_color=BG_INPUT,
+                fg_color=BG_BTN_SECONDARY,
                 hover_color=HOVER_SECONDARY,
-                text_color=TEXT_PRIMARY,
+                border_width=1,
+                border_color=BG_BORDER_BUTTON,
+                text_color=TEXT_SECONDARY,
+                height=30,
+                corner_radius=UI_RADIUS,
                 command=self.destroy
             ).pack(side=tk.RIGHT)
 
@@ -147,14 +179,18 @@ class LegalTermsModal(ctk.CTkToplevel):
                 self.btn_accept.configure(
                     state="normal",
                     fg_color=ACCENT_EMERALD,
-                    text_color="#ffffff",
+                    text_color=BUTTON_PRIMARY_TEXT,
+                    border_color=ACCENT_EMERALD,
+                    image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
                     hover_color=HOVER_EMERALD
                 )
             else:
                 self.btn_accept.configure(
                     state="disabled",
-                    fg_color=BG_INPUT,
-                    text_color="#94a3b8"
+                    fg_color=BG_BTN_SECONDARY,
+                    border_color=BG_BORDER_BUTTON,
+                    image=get_icon("check", TEXT_MUTED, 14),
+                    text_color=TEXT_MUTED
                 )
 
     def _reject_and_exit(self) -> None:

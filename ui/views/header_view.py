@@ -1,6 +1,6 @@
 """
 Vista de Cabecera y Barra de Acciones Globales (ui/views/header_view.py)
-KestrelWOL - CustomTkinter
+KestrelWOL - CustomTkinter (Industrial Enterprise Dark Mode)
 """
 
 import tkinter as tk
@@ -11,21 +11,27 @@ from core.config import (
     ACCENT_EMERALD,
     APP_SUBTITLE,
     APP_TITLE,
+    BG_BORDER,
+    BG_BORDER_BUTTON,
+    BG_BTN_SECONDARY,
     BG_CARD,
-    BG_INPUT,
+    BUTTON_PRIMARY_TEXT,
     FONTS,
     HOVER_EMERALD,
     HOVER_SECONDARY,
     TEXT_MUTED,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
+from ui.components.icons import get_icon
 
 
 class HeaderView(ctk.CTkFrame):
     """
     Cabecera superior:
     - Título y descripción operativa de la aplicación.
-    - Botones de acción globales (Términos legales, Auditoría, Encendido Masivo).
+    - Acciones secundarias monocromas (#1A1E26) + CTA primario único (#10B981).
     - Totalmente desacoplada: notifica al orquestador a través de callbacks.
     """
 
@@ -42,7 +48,9 @@ class HeaderView(ctk.CTkFrame):
         super().__init__(
             parent,
             fg_color=BG_CARD,
-            corner_radius=8,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS,
             **kwargs
         )
         self.on_open_terms = on_open_terms
@@ -79,62 +87,68 @@ class HeaderView(ctk.CTkFrame):
         btn_box = ctk.CTkFrame(self, fg_color="transparent")
         btn_box.pack(side=tk.RIGHT, padx=16, pady=12)
 
+        sec_btn_kwargs = {
+            "font": FONTS["caption_bold"],
+            "fg_color": BG_BTN_SECONDARY,
+            "hover_color": HOVER_SECONDARY,
+            "border_width": 1,
+            "border_color": BG_BORDER_BUTTON,
+            "text_color": TEXT_SECONDARY,
+            "height": 32,
+            "corner_radius": UI_RADIUS,
+        }
+
         # Botón Importar CSV
         ctk.CTkButton(
             btn_box,
-            text="📥 Importar CSV",
-            font=FONTS["caption_bold"],
-            fg_color=BG_INPUT,
-            hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
-            height=32,
-            command=lambda: self.on_import_csv() if self.on_import_csv else None
+            text="Importar CSV",
+            image=get_icon("upload", TEXT_SECONDARY, 14),
+            compound="left",
+            command=lambda: self.on_import_csv() if self.on_import_csv else None,
+            **sec_btn_kwargs
         ).pack(side=tk.LEFT, padx=(0, 6))
 
         # Botón Exportar CSV
         ctk.CTkButton(
             btn_box,
-            text="📤 Exportar CSV",
-            font=FONTS["caption_bold"],
-            fg_color=BG_INPUT,
-            hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
-            height=32,
-            command=lambda: self.on_export_csv() if self.on_export_csv else None
+            text="Exportar CSV",
+            image=get_icon("download", TEXT_SECONDARY, 14),
+            compound="left",
+            command=lambda: self.on_export_csv() if self.on_export_csv else None,
+            **sec_btn_kwargs
         ).pack(side=tk.LEFT, padx=(0, 6))
 
         # Botón Términos y Normativas
         ctk.CTkButton(
             btn_box,
-            text="⚖️ Términos",
-            font=FONTS["caption_bold"],
-            fg_color=BG_INPUT,
-            hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
-            height=32,
-            command=lambda: self.on_open_terms() if self.on_open_terms else None
+            text="Términos",
+            image=get_icon("shield", TEXT_SECONDARY, 14),
+            compound="left",
+            command=lambda: self.on_open_terms() if self.on_open_terms else None,
+            **sec_btn_kwargs
         ).pack(side=tk.LEFT, padx=(0, 6))
 
         # Botón Registro de Auditoría
         ctk.CTkButton(
             btn_box,
-            text="📋 Auditoría",
-            font=FONTS["caption_bold"],
-            fg_color=BG_INPUT,
-            hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
-            height=32,
-            command=lambda: self.on_open_audit() if self.on_open_audit else None
-        ).pack(side=tk.LEFT, padx=(0, 6))
+            text="Auditoría",
+            image=get_icon("file", TEXT_SECONDARY, 14),
+            compound="left",
+            command=lambda: self.on_open_audit() if self.on_open_audit else None,
+            **sec_btn_kwargs
+        ).pack(side=tk.LEFT, padx=(0, 8))
 
-        # Botón Encender Todos
+        # Único botón CTA primario global (Verde Esmeralda)
         ctk.CTkButton(
             btn_box,
-            text="⚡ ENCENDER TODOS",
+            text="ENCENDER TODOS",
+            image=get_icon("power", BUTTON_PRIMARY_TEXT, 14),
+            compound="left",
             font=FONTS["body_bold"],
             fg_color=ACCENT_EMERALD,
             hover_color=HOVER_EMERALD,
-            text_color=TEXT_PRIMARY,
+            text_color=BUTTON_PRIMARY_TEXT,
             height=32,
+            corner_radius=UI_RADIUS,
             command=lambda: self.on_wake_all() if self.on_wake_all else None
         ).pack(side=tk.LEFT)

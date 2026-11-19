@@ -1,6 +1,6 @@
 """
 Componente Tarjeta de Dispositivo (ui/components/device_card.py)
-KestrelWOL - CustomTkinter
+KestrelWOL - CustomTkinter (Industrial Enterprise Dark Mode)
 """
 
 import threading
@@ -14,31 +14,35 @@ from core.config import (
     ACCENT_BLUE,
     ACCENT_EMERALD,
     ACCENT_ROSE,
+    BG_BORDER,
+    BG_BORDER_BUTTON,
+    BG_BORDER_HOVER,
+    BG_BTN_SECONDARY,
     BG_CARD,
     BG_CONTAINER_DARK,
-    BG_INPUT,
+    BG_ROW,
     FONTS,
-    HOVER_BLUE,
-    HOVER_EMERALD,
-    HOVER_ROSE,
     HOVER_SECONDARY,
     STATUS_COLORS,
+    TEXT_DISABLED,
     TEXT_MUTED,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
 from services.audit_service import AuditService
 from services.system_service import SystemService
 from ui.components.computer_icon import ComputerIconComponent
+from ui.components.icons import get_icon, get_status_dot
 
 
 class DeviceCardComponent(ctk.CTkFrame):
     """
-    Tarjeta individual de puesto:
-    - Estado de monitor interactivo en tiempo real.
-    - Diagnóstico de servicios (RDP y SSH) integrado dentro de la caja de red.
-    - Distribución en 2 filas equilibradas con autoexpansión horizontal (0% recortes):
-        * Fila Energía: [⚡ Encender] [🛑 Apagar] [🔄 Reiniciar]
-        * Fila Acceso:  [🖥️ RDP] [💻 SSH] [⏰ Horario] [✏️] [❌]
+    Tarjeta individual de puesto (diseño cuadrado/modular preservado):
+    - Superficie #111318 con borde hairline 1px (#222630 -> #2E3440 en hover).
+    - Telemetría con punto circular de 6px y micro-etiquetas en mayúsculas.
+    - Iconografía vectorial monocroma de contorno (trazo 1.5px), cero emojis.
+    - Botones monocromos (#1A1E26 / borde #2A303C) y acción destructiva neutra hasta hover (#EF4444).
     """
 
     def __init__(
@@ -58,9 +62,9 @@ class DeviceCardComponent(ctk.CTkFrame):
         super().__init__(
             parent,
             fg_color=BG_CARD,
-            border_color=BG_INPUT,
+            border_color=BG_BORDER,
             border_width=1,
-            corner_radius=8,
+            corner_radius=UI_RADIUS,
             **kwargs
         )
 
@@ -76,12 +80,16 @@ class DeviceCardComponent(ctk.CTkFrame):
 
         self.audit = AuditService()
         self._build_ui()
+        self._bind_hover_border()
         self._start_diag_check()
 
-    def _build_ui(self) -> None:
+    def _bind_hover_border(self) -> None:
+        self.bind("<Enter>", lambda _e: self.configure(border_color=BG_BORDER_HOVER))
+        self.bind("<Leave>", lambda _e: self.configure(border_color=BG_BORDER))
 
+    def _build_ui(self) -> None:
         # ======================================================================
-        # 1. CABECERA: Nombre + Zona + Estado + Botones discretos (Editar / Borrar)
+        # 1. CABECERA: Nombre + Zona + Telemetría de Estado (punto 6px + texto)
         # ======================================================================
         header_frame = ctk.CTkFrame(self, fg_color="transparent")
         header_frame.pack(fill=tk.X, padx=12, pady=(10, 6))
@@ -100,31 +108,37 @@ class DeviceCardComponent(ctk.CTkFrame):
         zone_name = self.machine.get("zone", "General")
         btn_zone = ctk.CTkButton(
             left_header,
-            text=f"📍 {zone_name}",
-            font=FONTS["caption_bold"],
-            fg_color="#082f49",
-            hover_color="#0369a1",
-            text_color="#38bdf8",
-            height=20,
-            corner_radius=4,
+            text=zone_name,
+            image=get_icon("tag", TEXT_MUTED, 11),
+            compound="left",
+            font=FONTS["micro"],
+            fg_color=BG_ROW,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color=BG_BORDER,
+            text_color=TEXT_MUTED,
+            height=22,
+            corner_radius=UI_RADIUS,
             command=lambda: self.on_edit(self.machine) if self.on_edit else None
         )
-        btn_zone.pack(side=tk.LEFT, padx=(6, 0))
+        btn_zone.pack(side=tk.LEFT, padx=(8, 0))
 
         self.lbl_status = ctk.CTkLabel(
-            left_header,
-            text="● Comprobando...",
-            font=FONTS["caption_bold"],
+            header_frame,
+            text="  SONDEO",
+            image=get_status_dot(ACCENT_BLUE, 6),
+            compound="left",
+            font=FONTS["micro"],
             text_color=TEXT_MUTED,
-            fg_color=BG_CONTAINER_DARK,
-            corner_radius=4,
-            padx=6,
+            fg_color=BG_ROW,
+            corner_radius=UI_RADIUS,
+            padx=8,
             pady=2
         )
-        self.lbl_status.pack(side=tk.LEFT, padx=(6, 0))
+        self.lbl_status.pack(side=tk.RIGHT)
 
         # ======================================================================
-        # 2. CUERPO: Icono + IP/MAC Ocultables + DIAGNÓSTICO EN VIVO
+        # 2. CUERPO: Icono Vectorial + IP/MAC Monoespaciado + Diagnóstico
         # ======================================================================
         body_frame = ctk.CTkFrame(self, fg_color="transparent")
         body_frame.pack(fill=tk.X, padx=12, pady=(0, 8))
@@ -132,12 +146,18 @@ class DeviceCardComponent(ctk.CTkFrame):
         self.comp_icon = ComputerIconComponent(body_frame, size=(48, 42), bg_color=BG_CARD)
         self.comp_icon.pack(side=tk.LEFT, padx=(0, 8))
 
-        info_box = ctk.CTkFrame(body_frame, fg_color=BG_CONTAINER_DARK, corner_radius=6)
+        info_box = ctk.CTkFrame(
+            body_frame,
+            fg_color=BG_CONTAINER_DARK,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS
+        )
         info_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # Columna A: IP y MAC (ocultas por defecto, clicables para alternar)
         text_subframe = ctk.CTkFrame(info_box, fg_color="transparent")
-        text_subframe.pack(side=tk.LEFT, fill=tk.Y, padx=(8, 4), pady=4)
+        text_subframe.pack(side=tk.LEFT, fill=tk.Y, padx=(8, 4), pady=5)
 
         self.lbl_ip = ctk.CTkLabel(
             text_subframe,
@@ -164,44 +184,49 @@ class DeviceCardComponent(ctk.CTkFrame):
         # Botón Toggle Privacidad (Ver / Ocultar IP y MAC)
         self.btn_toggle_network = ctk.CTkButton(
             info_box,
-            text="👁️",
+            text="",
+            image=get_icon("eye", TEXT_MUTED, 14),
             width=28,
             height=28,
-            font=FONTS["caption_bold"],
-            fg_color="#1e293b",
-            hover_color="#334155",
-            text_color="#94a3b8",
-            corner_radius=4,
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            corner_radius=UI_RADIUS,
             command=self.toggle_network_visibility
         )
-        self.btn_toggle_network.pack(side=tk.LEFT, padx=(2, 6), pady=4)
+        self.btn_toggle_network.pack(side=tk.LEFT, padx=(2, 6), pady=5)
 
         self._update_network_display()
 
-        # Columna B: Diagnóstico de Servicios de Red (En el espacio negro)
+        # Columna B: Diagnóstico de Servicios de Red (Micro-indicadores con punto 6px)
         diag_subframe = ctk.CTkFrame(info_box, fg_color="transparent")
-        diag_subframe.pack(side=tk.RIGHT, padx=8, pady=4)
+        diag_subframe.pack(side=tk.RIGHT, padx=8, pady=5)
 
         self.lbl_rdp_diag = ctk.CTkLabel(
             diag_subframe,
-            text="RDP: ⏳",
-            font=FONTS["caption_bold"],
-            text_color=TEXT_MUTED,
-            fg_color="#1e293b",
-            corner_radius=4,
-            padx=6,
+            text="  RDP",
+            image=get_status_dot(TEXT_DISABLED, 6),
+            compound="left",
+            font=FONTS["micro"],
+            text_color=TEXT_DISABLED,
+            fg_color=BG_ROW,
+            corner_radius=UI_RADIUS,
+            padx=7,
             pady=2
         )
         self.lbl_rdp_diag.pack(side=tk.LEFT, padx=(0, 4))
 
         self.lbl_ssh_diag = ctk.CTkLabel(
             diag_subframe,
-            text="SSH: ⏳",
-            font=FONTS["caption_bold"],
-            text_color=TEXT_MUTED,
-            fg_color="#1e293b",
-            corner_radius=4,
-            padx=6,
+            text="  SSH",
+            image=get_status_dot(TEXT_DISABLED, 6),
+            compound="left",
+            font=FONTS["micro"],
+            text_color=TEXT_DISABLED,
+            fg_color=BG_ROW,
+            corner_radius=UI_RADIUS,
+            padx=7,
             pady=2
         )
         self.lbl_ssh_diag.pack(side=tk.LEFT)
@@ -210,18 +235,20 @@ class DeviceCardComponent(ctk.CTkFrame):
         # 3. BARRA HORARIO PROGRAMADO
         # ======================================================================
         sched_bar = ctk.CTkFrame(self, fg_color="transparent")
-        sched_bar.pack(fill=tk.X, padx=12, pady=(0, 6))
+        sched_bar.pack(fill=tk.X, padx=12, pady=(0, 8))
 
         sched_text, sched_color = self._format_schedule_text()
         has_sched = bool(self.machine.get("schedule", {}).get("enabled"))
         self.lbl_sched = ctk.CTkLabel(
             sched_bar,
-            text=sched_text,
-            font=FONTS["caption_bold"],
+            text=f"  {sched_text}",
+            image=get_icon("clock", ACCENT_AMBER if has_sched else TEXT_DISABLED, 12),
+            compound="left",
+            font=FONTS["micro"],
             text_color=sched_color,
-            fg_color="#1e293b" if has_sched else BG_CONTAINER_DARK,
-            corner_radius=4,
-            padx=8,
+            fg_color=BG_ROW if has_sched else "transparent",
+            corner_radius=UI_RADIUS,
+            padx=8 if has_sched else 2,
             pady=2,
             anchor="w"
         )
@@ -231,42 +258,57 @@ class DeviceCardComponent(ctk.CTkFrame):
         # 4. FILA 1 DE BOTONES: CONTROL DE ENERGÍA (ENCENDER / APAGAR / REINICIAR)
         # ======================================================================
         row_power = ctk.CTkFrame(self, fg_color="transparent")
-        row_power.pack(fill=tk.X, padx=12, pady=(0, 4))
+        row_power.pack(fill=tk.X, padx=12, pady=(0, 5))
 
-        # Encender
+        # Encender (Sutil acento esmeralda industrial sobre superficie oscura)
         self.btn_wake = ctk.CTkButton(
             row_power,
-            text="⚡ Encender",
-            height=28,
+            text="Encender",
+            image=get_icon("power", ACCENT_EMERALD, 14),
+            compound="left",
+            height=30,
             font=FONTS["body_bold"],
-            fg_color=ACCENT_EMERALD,
-            hover_color=HOVER_EMERALD,
-            text_color=TEXT_PRIMARY,
+            fg_color="#102820",
+            hover_color="#16382D",
+            border_width=1,
+            border_color="#1D4D3D",
+            text_color=ACCENT_EMERALD,
+            corner_radius=UI_RADIUS,
             command=lambda: self.on_wake(self.machine) if self.on_wake else None
         )
         self.btn_wake.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0, 4))
 
-        # Apagar
+        # Apagar (Neutro hasta hover rojo destructivo #EF4444)
         ctk.CTkButton(
             row_power,
-            text="🛑 Apagar",
-            height=28,
+            text="Apagar",
+            image=get_icon("power_off", TEXT_MUTED, 14),
+            compound="left",
+            height=30,
             font=FONTS["caption_bold"],
-            fg_color=ACCENT_ROSE,
-            hover_color=HOVER_ROSE,
-            text_color=TEXT_PRIMARY,
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=ACCENT_ROSE,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_MUTED,
+            corner_radius=UI_RADIUS,
             command=self._handle_shutdown
         ).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
 
-        # Reiniciar
+        # Reiniciar (Monocromo secundario)
         ctk.CTkButton(
             row_power,
-            text="🔄 Reiniciar",
-            height=28,
+            text="Reiniciar",
+            image=get_icon("refresh", TEXT_SECONDARY, 14),
+            compound="left",
+            height=30,
             font=FONTS["caption_bold"],
-            fg_color="#b45309",
-            hover_color="#d97706",
-            text_color=TEXT_PRIMARY,
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            corner_radius=UI_RADIUS,
             command=self._handle_reboot
         ).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(4, 0))
 
@@ -279,62 +321,81 @@ class DeviceCardComponent(ctk.CTkFrame):
         # RDP
         ctk.CTkButton(
             row_tools,
-            text="🖥️ RDP",
-            height=28,
+            text="RDP",
+            image=get_icon("monitor", TEXT_SECONDARY, 14),
+            compound="left",
+            height=30,
             font=FONTS["caption_bold"],
-            fg_color="#0284c7",
-            hover_color="#0369a1",
-            text_color=TEXT_PRIMARY,
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            corner_radius=UI_RADIUS,
             command=self._handle_rdp
         ).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0, 4))
 
         # SSH
         ctk.CTkButton(
             row_tools,
-            text="💻 SSH",
-            height=28,
+            text="SSH",
+            image=get_icon("terminal", TEXT_SECONDARY, 14),
+            compound="left",
+            height=30,
             font=FONTS["caption_bold"],
-            fg_color=BG_INPUT,
+            fg_color=BG_BTN_SECONDARY,
             hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            corner_radius=UI_RADIUS,
             command=self._handle_ssh
         ).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
 
-        # Programador (más legible)
+        # Programador
         ctk.CTkButton(
             row_tools,
-            text="⏰ Horario",
-            height=28,
+            text="Horario",
+            image=get_icon("clock", ACCENT_AMBER if has_sched else TEXT_SECONDARY, 14),
+            compound="left",
+            height=30,
             font=FONTS["caption_bold"],
-            fg_color=ACCENT_AMBER if has_sched else BG_INPUT,
-            hover_color="#d97706" if has_sched else HOVER_SECONDARY,
-            text_color="#0f172a" if has_sched else TEXT_PRIMARY,
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color="#3D3118" if has_sched else BG_BORDER_BUTTON,
+            text_color=ACCENT_AMBER if has_sched else TEXT_SECONDARY,
+            corner_radius=UI_RADIUS,
             command=lambda: self.on_schedule(self.machine) if self.on_schedule else None
         ).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
 
-        # Editar dispositivo (botón estilizado con hover Slate)
+        # Editar dispositivo (botón monocromo)
         ctk.CTkButton(
             row_tools,
-            text="✏️",
+            text="",
+            image=get_icon("edit", TEXT_SECONDARY, 14),
             width=30,
-            height=28,
-            font=FONTS["body_bold"],
-            fg_color=BG_INPUT,
+            height=30,
+            fg_color=BG_BTN_SECONDARY,
             hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            corner_radius=UI_RADIUS,
             command=lambda: self.on_edit(self.machine) if self.on_edit else None
         ).pack(side=tk.LEFT, padx=2)
 
-        # Eliminar dispositivo (botón estilizado con hover Rose)
+        # Eliminar dispositivo (neutro hasta hover rojo destructivo #EF4444)
         ctk.CTkButton(
             row_tools,
-            text="❌",
+            text="",
+            image=get_icon("trash", TEXT_MUTED, 14),
             width=30,
-            height=28,
-            font=FONTS["body_bold"],
-            fg_color=BG_INPUT,
+            height=30,
+            fg_color=BG_BTN_SECONDARY,
             hover_color=ACCENT_ROSE,
-            text_color=TEXT_PRIMARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            corner_radius=UI_RADIUS,
             command=lambda: self.on_delete(self.machine) if self.on_delete else None
         ).pack(side=tk.LEFT, padx=(2, 0))
 
@@ -344,22 +405,22 @@ class DeviceCardComponent(ctk.CTkFrame):
     def _format_schedule_text(self) -> tuple[str, str]:
         schedule = self.machine.get("schedule")
         if not schedule or not schedule.get("enabled") or not schedule.get("time"):
-            return "🕒 Sin programar", TEXT_MUTED
+            return "SIN PROGRAMAR", TEXT_DISABLED
 
         days = schedule.get("days", [])
-        day_names = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+        day_names = ["LUN", "MAR", "MIE", "JUE", "VIE", "SAB", "DOM"]
         if len(days) == 7:
-            d_str = "Diario"
+            d_str = "DIARIO"
         elif set(days) == {0, 1, 2, 3, 4}:
-            d_str = "Lun-Vie"
+            d_str = "LUN-VIE"
         elif set(days) == {5, 6}:
-            d_str = "Fines de sem."
+            d_str = "FIN DE SEM."
         elif days:
             d_str = ", ".join([day_names[d] for d in sorted(days) if 0 <= d < 7])
         else:
-            d_str = "Ninguno"
+            d_str = "NINGUNO"
 
-        return f"⏰ {schedule['time']} ({d_str})", ACCENT_AMBER
+        return f"{schedule['time']} ({d_str})", ACCENT_AMBER
 
     def _start_diag_check(self) -> None:
         """Escanea en segundo plano si los puertos RDP y SSH responden."""
@@ -378,29 +439,60 @@ class DeviceCardComponent(ctk.CTkFrame):
         if not self.winfo_exists():
             return
         if res.get("rdp"):
-            self.lbl_rdp_diag.configure(text="RDP: ● Activo", fg_color="#064e3b", text_color="#34d399")
+            self.lbl_rdp_diag.configure(
+                text="  RDP",
+                image=get_status_dot(ACCENT_EMERALD, 6),
+                fg_color=BG_ROW,
+                text_color=ACCENT_EMERALD
+            )
         else:
-            self.lbl_rdp_diag.configure(text="RDP: ○ Inactivo", fg_color="#1e293b", text_color="#64748b")
+            self.lbl_rdp_diag.configure(
+                text="  RDP",
+                image=get_status_dot(TEXT_DISABLED, 6),
+                fg_color=BG_ROW,
+                text_color=TEXT_DISABLED
+            )
 
         if res.get("ssh"):
-            self.lbl_ssh_diag.configure(text="SSH: ● Activo", fg_color="#064e3b", text_color="#34d399")
+            self.lbl_ssh_diag.configure(
+                text="  SSH",
+                image=get_status_dot(ACCENT_EMERALD, 6),
+                fg_color=BG_ROW,
+                text_color=ACCENT_EMERALD
+            )
         else:
-            self.lbl_ssh_diag.configure(text="SSH: ○ Inactivo", fg_color="#1e293b", text_color="#64748b")
+            self.lbl_ssh_diag.configure(
+                text="  SSH",
+                image=get_status_dot(TEXT_DISABLED, 6),
+                fg_color=BG_ROW,
+                text_color=TEXT_DISABLED
+            )
 
     def update_status(self, status: str) -> None:
         """Actualiza el estado gráfico de forma thread-safe."""
         cfg = STATUS_COLORS.get(status, STATUS_COLORS["pending"])
         self.comp_icon.set_state(status)
         self.lbl_status.configure(
-            text=cfg["text"],
+            text=f"  {cfg['text']}",
+            image=get_status_dot(cfg["dot"], 6),
             fg_color=cfg["bg"],
             text_color=cfg["fg"]
         )
         if status == "online":
             self._start_diag_check()
         elif status == "offline":
-            self.lbl_rdp_diag.configure(text="RDP: ○ Inactivo", fg_color="#1e293b", text_color="#64748b")
-            self.lbl_ssh_diag.configure(text="SSH: ○ Inactivo", fg_color="#1e293b", text_color="#64748b")
+            self.lbl_rdp_diag.configure(
+                text="  RDP",
+                image=get_status_dot(TEXT_DISABLED, 6),
+                fg_color=BG_ROW,
+                text_color=TEXT_DISABLED
+            )
+            self.lbl_ssh_diag.configure(
+                text="  SSH",
+                image=get_status_dot(TEXT_DISABLED, 6),
+                fg_color=BG_ROW,
+                text_color=TEXT_DISABLED
+            )
 
     def _handle_rdp(self) -> None:
         if self.on_launch_rdp:
@@ -493,21 +585,20 @@ class DeviceCardComponent(ctk.CTkFrame):
         raw_mac = self.machine.get("mac", "N/A")
 
         if self._show_network_info:
-            self.lbl_ip.configure(text=f"IP:   {raw_ip}")
-            self.lbl_mac.configure(text=f"MAC:  {raw_mac}")
+            self.lbl_ip.configure(text=f"IP   {raw_ip}")
+            self.lbl_mac.configure(text=f"MAC  {raw_mac}")
             self.btn_toggle_network.configure(
-                text="🔒",
-                fg_color="#334155",
-                hover_color="#475569"
+                image=get_icon("eye_off", TEXT_SECONDARY, 14),
+                fg_color=BG_ROW,
+                hover_color=HOVER_SECONDARY
             )
         else:
-            masked_ip = "●●●.●●●.●●●.●●●" if raw_ip != "N/A" else "N/A"
-            masked_mac = "●●:●●:●●:●●:●●:●●" if raw_mac != "N/A" else "N/A"
-            self.lbl_ip.configure(text=f"IP:   {masked_ip}")
-            self.lbl_mac.configure(text=f"MAC:  {masked_mac}")
+            masked_ip = "***.***.***.***" if raw_ip != "N/A" else "N/A"
+            masked_mac = "**:**:**:**:**:**" if raw_mac != "N/A" else "N/A"
+            self.lbl_ip.configure(text=f"IP   {masked_ip}")
+            self.lbl_mac.configure(text=f"MAC  {masked_mac}")
             self.btn_toggle_network.configure(
-                text="👁️",
-                fg_color="#1e293b",
-                hover_color="#334155"
+                image=get_icon("eye", TEXT_MUTED, 14),
+                fg_color=BG_BTN_SECONDARY,
+                hover_color=HOVER_SECONDARY
             )
-

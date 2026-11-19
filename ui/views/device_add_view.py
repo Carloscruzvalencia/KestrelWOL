@@ -1,6 +1,6 @@
 """
 Vista de Formulario para Agregar Dispositivos (ui/views/device_add_view.py)
-KestrelWOL - CustomTkinter
+KestrelWOL - CustomTkinter (Industrial Enterprise Dark Mode)
 """
 
 import tkinter as tk
@@ -8,15 +8,19 @@ from typing import Callable, Dict, List, Optional
 import customtkinter as ctk
 
 from core.config import (
-    ACCENT_BLUE,
+    BG_BORDER,
+    BG_BORDER_BUTTON,
+    BG_BTN_SECONDARY,
     BG_CARD,
     BG_INPUT,
     FONTS,
-    HOVER_BLUE,
     HOVER_SECONDARY,
-    TEXT_MUTED,
+    TEXT_DISABLED,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
+from ui.components.icons import get_icon
 from ui.components.zone_dropdown_input import ZoneDropdownInput
 
 
@@ -24,8 +28,7 @@ class DeviceAddView(ctk.CTkFrame):
     """
     Panel superior con formulario para dar de alta nuevos puestos en la red:
     - Campos: Nombre, IP, MAC y Zona con desplegable de zonas existentes.
-    - Botones de Escanear Red y Guardar en Panel.
-    - Notifica al orquestador a través de callbacks sin lógica de almacenamiento acoplada.
+    - Botones monocromos con bordes hairline 1px y tipografía monoespaciada en campos técnicos.
     """
 
     def __init__(
@@ -39,7 +42,9 @@ class DeviceAddView(ctk.CTkFrame):
         super().__init__(
             parent,
             fg_color=BG_CARD,
-            corner_radius=8,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS,
             **kwargs
         )
         self.get_zones_callback = get_zones_callback
@@ -51,33 +56,42 @@ class DeviceAddView(ctk.CTkFrame):
     def _build_ui(self) -> None:
         lbl_sec = ctk.CTkLabel(
             self,
-            text="Agregar Nuevo Dispositivo",
-            font=FONTS["title_section"],
-            text_color=TEXT_PRIMARY,
+            text="AGREGAR DISPOSITIVO",
+            font=FONTS["micro"],
+            text_color=TEXT_DISABLED,
             anchor="w"
         )
-        lbl_sec.pack(anchor="w", padx=16, pady=(12, 6))
+        lbl_sec.pack(anchor="w", padx=16, pady=(10, 6))
 
         inputs_frame = ctk.CTkFrame(self, fg_color="transparent")
-        inputs_frame.pack(fill=tk.X, padx=16, pady=(0, 8))
+        inputs_frame.pack(fill=tk.X, padx=16, pady=(0, 10))
+
+        entry_kwargs = {
+            "height": 30,
+            "fg_color": BG_INPUT,
+            "border_color": BG_BORDER_BUTTON,
+            "border_width": 1,
+            "corner_radius": UI_RADIUS,
+            "text_color": TEXT_PRIMARY,
+        }
 
         # 1. Nombre
-        ctk.CTkLabel(inputs_frame, text="Nombre:", font=FONTS["body_bold"], text_color=TEXT_MUTED).grid(row=0, column=0, sticky="w", padx=(0, 4))
-        self.entry_name = ctk.CTkEntry(inputs_frame, font=FONTS["body_normal"], height=30, fg_color=BG_CARD, border_color=BG_INPUT, border_width=1)
-        self.entry_name.grid(row=0, column=1, padx=(0, 10), sticky="ew")
+        ctk.CTkLabel(inputs_frame, text="Nombre", font=FONTS["caption_bold"], text_color=TEXT_DISABLED).grid(row=0, column=0, sticky="w", padx=(0, 6))
+        self.entry_name = ctk.CTkEntry(inputs_frame, font=FONTS["body_normal"], placeholder_text="WS-01", **entry_kwargs)
+        self.entry_name.grid(row=0, column=1, padx=(0, 12), sticky="ew")
 
         # 2. IP
-        ctk.CTkLabel(inputs_frame, text="IP:", font=FONTS["body_bold"], text_color=TEXT_MUTED).grid(row=0, column=2, sticky="w", padx=(0, 4))
-        self.entry_ip = ctk.CTkEntry(inputs_frame, font=FONTS["body_normal"], height=30, fg_color=BG_CARD, border_color=BG_INPUT, border_width=1)
-        self.entry_ip.grid(row=0, column=3, padx=(0, 10), sticky="ew")
+        ctk.CTkLabel(inputs_frame, text="IP", font=FONTS["caption_bold"], text_color=TEXT_DISABLED).grid(row=0, column=2, sticky="w", padx=(0, 6))
+        self.entry_ip = ctk.CTkEntry(inputs_frame, font=FONTS["mono_data"], placeholder_text="192.168.1.50", **entry_kwargs)
+        self.entry_ip.grid(row=0, column=3, padx=(0, 12), sticky="ew")
 
         # 3. MAC
-        ctk.CTkLabel(inputs_frame, text="MAC:", font=FONTS["body_bold"], text_color=TEXT_MUTED).grid(row=0, column=4, sticky="w", padx=(0, 4))
-        self.entry_mac = ctk.CTkEntry(inputs_frame, font=FONTS["body_normal"], height=30, fg_color=BG_CARD, border_color=BG_INPUT, border_width=1)
-        self.entry_mac.grid(row=0, column=5, padx=(0, 10), sticky="ew")
+        ctk.CTkLabel(inputs_frame, text="MAC", font=FONTS["caption_bold"], text_color=TEXT_DISABLED).grid(row=0, column=4, sticky="w", padx=(0, 6))
+        self.entry_mac = ctk.CTkEntry(inputs_frame, font=FONTS["mono_data"], placeholder_text="AA:BB:CC:DD:EE:FF", **entry_kwargs)
+        self.entry_mac.grid(row=0, column=5, padx=(0, 12), sticky="ew")
 
         # 4. Zona con selector desplegable
-        ctk.CTkLabel(inputs_frame, text="Zona:", font=FONTS["body_bold"], text_color=TEXT_MUTED).grid(row=0, column=6, sticky="w", padx=(0, 4))
+        ctk.CTkLabel(inputs_frame, text="Zona", font=FONTS["caption_bold"], text_color=TEXT_DISABLED).grid(row=0, column=6, sticky="w", padx=(0, 6))
         self.entry_zone = ZoneDropdownInput(inputs_frame, get_zones_callback=self.get_zones_callback, height=30)
         self.entry_zone.set("Zona A")
         self.entry_zone.grid(row=0, column=7, sticky="ew")
@@ -93,23 +107,33 @@ class DeviceAddView(ctk.CTkFrame):
 
         ctk.CTkButton(
             actions_frame,
-            text="🔍 Escanear Red local",
+            text="Escanear Red local",
+            image=get_icon("search", TEXT_SECONDARY, 14),
+            compound="left",
             font=FONTS["caption_bold"],
-            fg_color=BG_INPUT,
+            fg_color=BG_BTN_SECONDARY,
             hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
-            height=28,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            height=30,
+            corner_radius=UI_RADIUS,
             command=lambda: self.on_open_scanner() if self.on_open_scanner else None
         ).pack(side=tk.LEFT)
 
         ctk.CTkButton(
             actions_frame,
-            text="💾 Guardar en Panel",
+            text="Guardar en Panel",
+            image=get_icon("plus", TEXT_PRIMARY, 14),
+            compound="left",
             font=FONTS["body_bold"],
-            fg_color=ACCENT_BLUE,
-            hover_color=HOVER_BLUE,
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
             text_color=TEXT_PRIMARY,
-            height=28,
+            height=30,
+            corner_radius=UI_RADIUS,
             command=self._on_submit
         ).pack(side=tk.RIGHT)
 

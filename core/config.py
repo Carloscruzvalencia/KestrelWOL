@@ -64,62 +64,76 @@ MONITOR_ITEM_SLEEP_SECONDS: float = 0.3     # Pausa entre pings para 0% picos de
 SCHEDULE_CHECK_INTERVAL_SECONDS: float = 15.0 # Verificación de encendido programado
 
 # ==============================================================================
-# 4. PALETA DE COLORES (THEME: SLATE DARK INDUSTRIAL)
+# 4. PALETA DE COLORES (THEME: INDUSTRIAL ENTERPRISE DARK MODE)
 # ==============================================================================
-# Fondos Principales (Slate)
-BG_DARK: str = "#0f172a"          # Slate 900 (Fondo principal ventana)
-BG_CARD: str = "#1e293b"          # Slate 800 (Fondo tarjetas y paneles)
-BG_INPUT: str = "#334155"         # Slate 700 (Inputs y acentos secundarios)
-BG_CONTAINER_DARK: str = "#0b1120"# Slate 950 (Terminales, consolas y subcajas)
-BG_BORDER: str = "#475569"         # Slate 600 (Bordes y separadores)
+# Fondos y Superficies Neutras (Obsidian / Neutral-Black)
+BG_DARK: str = "#090A0D"              # Fondo principal de la aplicación
+BG_CARD: str = "#111318"              # Superficies elevadas (tarjetas, cabecera, modales)
+BG_ROW: str = "#161920"               # Filas interactivas / contenedores activos
+BG_INPUT: str = "#161920"             # Campos de entrada
+BG_CONTAINER_DARK: str = "#0D0F14"    # Cajas de telemetría, terminales y logs
+BG_BTN_SECONDARY: str = "#1A1E26"     # Botones secundarios y acciones de tarjeta
+BG_BORDER: str = "#222630"            # Borde hairline por defecto (1px)
+BG_BORDER_HOVER: str = "#2E3440"      # Borde hairline en hover (1px)
+BG_BORDER_BUTTON: str = "#2A303C"     # Borde hairline para botones secundarios (1px)
 
 # Tipografías y Contrastes
-TEXT_PRIMARY: str = "#f8fafc"     # Slate 50  (Texto primario)
-TEXT_MUTED: str = "#94a3b8"       # Slate 400 (Texto secundario / descriptivo)
-TEXT_DISABLED: str = "#64748b"    # Slate 500 (Controles deshabilitados)
+TEXT_PRIMARY: str = "#F8FAFC"         # Texto principal
+TEXT_SECONDARY: str = "#E2E8F0"       # Texto off-white para acciones secundarias
+TEXT_MUTED: str = "#94A3B8"           # Texto secundario / descriptivo
+TEXT_DISABLED: str = "#64748B"        # Cabeceras de columna / deshabilitados
 
 # Colores de Acento y Estados Operativos
-ACCENT_BLUE: str = "#3b82f6"      # Blue 500    (Acciones primarias / Focus)
-ACCENT_EMERALD: str = "#10b981"   # Emerald 500 (Online / Encendido exitoso)
-ACCENT_ROSE: str = "#ef4444"      # Rose 500    (Offline / Desconectado / Peligro)
-ACCENT_AMBER: str = "#f59e0b"     # Amber 500   (Alertas / Programado)
-ACCENT_SKY: str = "#38bdf8"       # Sky 400     (Zonas / Presets / Enlaces)
+ACCENT_EMERALD: str = "#10B981"       # Acento primario global y estado activo
+HOVER_EMERALD: str = "#059669"        # Hover primario
+BUTTON_PRIMARY_TEXT: str = "#090A0D"  # Texto de alto contraste sobre acento esmeralda
+
+ACCENT_BLUE: str = "#3B82F6"          # Indicador informativo / sondeo
+ACCENT_ROSE: str = "#EF4444"          # Offline / acción destructiva en hover
+ACCENT_AMBER: str = "#F59E0B"         # Alertas / programado
+ACCENT_SKY: str = "#94A3B8"           # Enlaces / metadata neutra
 
 # Colores de Hover (Interactividad)
-HOVER_BLUE: str = "#2563eb"       # Blue 600
-HOVER_EMERALD: str = "#059669"    # Emerald 600
-HOVER_ROSE: str = "#dc2626"       # Rose 600
-HOVER_AMBER: str = "#d97706"      # Amber 600
-HOVER_SECONDARY: str = "#475569"  # Slate 600
+HOVER_BLUE: str = "#2563EB"
+HOVER_ROSE: str = "#EF4444"
+HOVER_AMBER: str = "#D97706"
+HOVER_SECONDARY: str = "#232834"      # Hover sutil para botones #1A1E26
 
-# Estados de Monitor / Puestos
+# Radio de bordes consistente
+UI_RADIUS: int = 6
+
+# Estados de Monitor / Puestos (Micro-etiquetas en mayúsculas + punto 6px)
 STATUS_COLORS: Dict[str, Dict[str, str]] = {
     "online": {
-        "text": "● Encendido",
-        "bg": "#064e3b",
-        "fg": "#34d399",
-        "icon_fill": "#06281e",
-        "icon_outline": "#10b981",
+        "text": "ONLINE",
+        "dot": "#10B981",
+        "bg": "#161920",
+        "fg": "#10B981",
+        "icon_fill": "#0D1E18",
+        "icon_outline": "#10B981",
     },
     "offline": {
-        "text": "● Desconectado",
-        "bg": "#450a0a",
-        "fg": "#f87171",
-        "icon_fill": "#260b0e",
-        "icon_outline": "#ef4444",
+        "text": "OFFLINE",
+        "dot": "#EF4444",
+        "bg": "#161920",
+        "fg": "#94A3B8",
+        "icon_fill": "#1A1114",
+        "icon_outline": "#EF4444",
     },
     "error": {
-        "text": "● Error / Advertencia",
-        "bg": "#451a03",
-        "fg": "#fbbf24",
-        "icon_fill": "#2a1b05",
-        "icon_outline": "#f59e0b",
+        "text": "ALERTA",
+        "dot": "#F59E0B",
+        "bg": "#161920",
+        "fg": "#F59E0B",
+        "icon_fill": "#1E180E",
+        "icon_outline": "#F59E0B",
     },
     "pending": {
-        "text": "● Comprobando...",
-        "bg": "#0f172a",
-        "fg": "#94a3b8",
-        "icon_fill": "#0f172a",
+        "text": "SONDEO",
+        "dot": "#3B82F6",
+        "bg": "#161920",
+        "fg": "#94A3B8",
+        "icon_fill": "#161920",
         "icon_outline": "#475569",
     },
 }
@@ -131,16 +145,16 @@ FONT_FAMILY_MAIN: str = "Segoe UI"
 FONT_FAMILY_MONO: str = "Consolas"
 
 FONTS = {
-    "title_main": (FONT_FAMILY_MAIN, 14, "bold"),
+    "title_main": (FONT_FAMILY_MAIN, 15, "bold"),
     "title_section": (FONT_FAMILY_MAIN, 11, "bold"),
     "title_card": (FONT_FAMILY_MAIN, 12, "bold"),
-    "body_bold": (FONT_FAMILY_MAIN, 9, "bold"),
-    "body_normal": (FONT_FAMILY_MAIN, 9),
-    "caption_bold": (FONT_FAMILY_MAIN, 8, "bold"),
-    "caption_normal": (FONT_FAMILY_MAIN, 8),
-    "micro": (FONT_FAMILY_MAIN, 7, "bold"),
-    "mono_data": (FONT_FAMILY_MONO, 9),
-    "mono_log": (FONT_FAMILY_MONO, 9),
+    "body_bold": (FONT_FAMILY_MAIN, 10, "bold"),
+    "body_normal": (FONT_FAMILY_MAIN, 10),
+    "caption_bold": (FONT_FAMILY_MAIN, 9, "bold"),
+    "caption_normal": (FONT_FAMILY_MAIN, 9),
+    "micro": (FONT_FAMILY_MAIN, 8, "bold"),
+    "mono_data": (FONT_FAMILY_MONO, 11),
+    "mono_log": (FONT_FAMILY_MONO, 10),
     "clock_large": (FONT_FAMILY_MAIN, 16, "bold"),
 }
 
@@ -169,7 +183,7 @@ MODAL_SIZES: Dict[str, Tuple[int, int]] = {
 # 7. TEXTOS LEGALES Y CLÁUSULAS NORMATIVAS (EULA / RD 1215/1997 / REBT)
 # ==============================================================================
 EULA_BANNER_TEXT: str = (
-    "⚠️ EULA: No apto para control de parada de emergencia ni entornos con riesgo físico "
+    "EULA: No apto para control de parada de emergencia ni entornos con riesgo físico "
     "(non-fail-safe). Distribución 'AS IS' bajo Directiva 2006/42/CE & REBT."
 )
 

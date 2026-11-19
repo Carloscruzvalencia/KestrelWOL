@@ -10,17 +10,24 @@ import customtkinter as ctk
 from core.config import (
     ACCENT_AMBER,
     ACCENT_EMERALD,
+    ACCENT_ROSE,
+    BG_BORDER,
+    BG_BORDER_BUTTON,
+    BG_BTN_SECONDARY,
     BG_CARD,
     BG_CONTAINER_DARK,
     BG_DARK,
-    BG_INPUT,
+    BUTTON_PRIMARY_TEXT,
     FONTS,
     HOVER_EMERALD,
     HOVER_SECONDARY,
     MODAL_SIZES,
     TEXT_MUTED,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
+from ui.components.icons import get_icon
 
 
 class SafetyConfirmModal(ctk.CTkToplevel):
@@ -44,7 +51,7 @@ class SafetyConfirmModal(ctk.CTkToplevel):
         self.on_confirm = on_confirm
 
         w, h = MODAL_SIZES["safety_confirm"]
-        self.title("⚠️ Confirmación de Seguridad Operativa")
+        self.title("Confirmación de Seguridad Operativa")
         self.geometry(f"{w}x{h}")
         self.configure(fg_color=BG_DARK)
 
@@ -54,12 +61,20 @@ class SafetyConfirmModal(ctk.CTkToplevel):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        card = ctk.CTkFrame(self, fg_color=BG_CARD, corner_radius=8)
+        card = ctk.CTkFrame(
+            self,
+            fg_color=BG_CARD,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS
+        )
         card.pack(fill=tk.BOTH, expand=True, padx=16, pady=16)
 
         ctk.CTkLabel(
             card,
-            text="⚠️ PREVENCIÓN DE RIESGOS LABORALES (RD 1215/1997)",
+            text="  PREVENCIÓN DE RIESGOS LABORALES (RD 1215/1997)",
+            image=get_icon("alert", ACCENT_AMBER, 15),
+            compound="left",
             font=FONTS["title_section"],
             text_color=ACCENT_AMBER,
             anchor="w"
@@ -74,13 +89,19 @@ class SafetyConfirmModal(ctk.CTkToplevel):
         ).pack(anchor="w", padx=16, pady=(0, 10))
 
         # Desglose de puestos
-        breakdown = ctk.CTkFrame(card, fg_color=BG_CONTAINER_DARK, corner_radius=6)
+        breakdown = ctk.CTkFrame(
+            card,
+            fg_color=BG_CONTAINER_DARK,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS
+        )
         breakdown.pack(fill=tk.X, padx=16, pady=(0, 10))
 
         ctk.CTkLabel(
             breakdown,
-            text=f"• Total de equipos a encender: {len(self.targets)} equipo(s)",
-            font=FONTS["body_bold"],
+            text=f"Total de equipos a encender: {len(self.targets)} equipo(s)",
+            font=FONTS["mono_data"],
             text_color=ACCENT_EMERALD,
             anchor="w"
         ).pack(anchor="w", padx=12, pady=(10, 10))
@@ -91,10 +112,10 @@ class SafetyConfirmModal(ctk.CTkToplevel):
 
         ctk.CTkLabel(
             elec_box,
-            text="⚡ REBT / UNE-EN 62040: El encendido se ejecutará con retardo escalonado de 250 ms\n"
+            text="REBT / UNE-EN 62040: El encendido se ejecutará con retardo escalonado de 250 ms\n"
                  "entre paquetes para proteger contra picos de corriente (inrush current) en SAIs.",
             font=FONTS["caption_normal"],
-            text_color="#38bdf8",
+            text_color=TEXT_MUTED,
             justify="left",
             anchor="w"
         ).pack(anchor="w")
@@ -102,18 +123,22 @@ class SafetyConfirmModal(ctk.CTkToplevel):
         if not self.targets:
             ctk.CTkLabel(
                 card,
-                text="❌ No hay equipos en la lista seleccionada.",
+                text="No hay equipos en la lista seleccionada.",
                 font=FONTS["body_bold"],
-                text_color="#f87171"
+                text_color=ACCENT_ROSE
             ).pack(pady=10)
 
             ctk.CTkButton(
                 card,
                 text="Entendido",
                 font=FONTS["body_normal"],
-                fg_color=BG_INPUT,
+                fg_color=BG_BTN_SECONDARY,
                 hover_color=HOVER_SECONDARY,
-                text_color=TEXT_PRIMARY,
+                border_width=1,
+                border_color=BG_BORDER_BUTTON,
+                text_color=TEXT_SECONDARY,
+                height=30,
+                corner_radius=UI_RADIUS,
                 command=self.destroy
             ).pack(side=tk.RIGHT, padx=16, pady=10)
         else:
@@ -126,6 +151,8 @@ class SafetyConfirmModal(ctk.CTkToplevel):
                 text_color=TEXT_PRIMARY,
                 fg_color=ACCENT_EMERALD,
                 hover_color=HOVER_EMERALD,
+                border_color=BG_BORDER_BUTTON,
+                corner_radius=4,
                 command=self._on_check_toggle
             )
             chk.pack(anchor="w", padx=16, pady=(0, 16))
@@ -137,19 +164,29 @@ class SafetyConfirmModal(ctk.CTkToplevel):
                 btn_box,
                 text="Cancelar",
                 font=FONTS["body_normal"],
-                fg_color=BG_INPUT,
+                fg_color=BG_BTN_SECONDARY,
                 hover_color=HOVER_SECONDARY,
-                text_color=TEXT_PRIMARY,
+                border_width=1,
+                border_color=BG_BORDER_BUTTON,
+                text_color=TEXT_SECONDARY,
+                height=30,
+                corner_radius=UI_RADIUS,
                 command=self.destroy
             ).pack(side=tk.LEFT)
 
             self.btn_confirm = ctk.CTkButton(
                 btn_box,
-                text="⚡ Confirmar y Encender",
+                text="Confirmar y Encender",
+                image=get_icon("power", TEXT_MUTED, 14),
+                compound="left",
                 font=FONTS["body_bold"],
-                fg_color=ACCENT_EMERALD,
+                fg_color=BG_BTN_SECONDARY,
                 hover_color=HOVER_EMERALD,
-                text_color=TEXT_PRIMARY,
+                border_width=1,
+                border_color=BG_BORDER_BUTTON,
+                text_color=TEXT_MUTED,
+                height=30,
+                corner_radius=UI_RADIUS,
                 state="disabled",
                 command=self._confirm
             )
@@ -157,11 +194,24 @@ class SafetyConfirmModal(ctk.CTkToplevel):
 
     def _on_check_toggle(self) -> None:
         if hasattr(self, "btn_confirm"):
-            state = "normal" if self.chk_safe.get() else "disabled"
-            self.btn_confirm.configure(state=state)
+            if self.chk_safe.get():
+                self.btn_confirm.configure(
+                    state="normal",
+                    fg_color=ACCENT_EMERALD,
+                    border_color=ACCENT_EMERALD,
+                    text_color=BUTTON_PRIMARY_TEXT,
+                    image=get_icon("power", BUTTON_PRIMARY_TEXT, 14)
+                )
+            else:
+                self.btn_confirm.configure(
+                    state="disabled",
+                    fg_color=BG_BTN_SECONDARY,
+                    border_color=BG_BORDER_BUTTON,
+                    text_color=TEXT_MUTED,
+                    image=get_icon("power", TEXT_MUTED, 14)
+                )
 
     def _confirm(self) -> None:
         self.destroy()
         if self.on_confirm:
             self.on_confirm(self.targets)
-

@@ -73,7 +73,7 @@ class ComputerIconComponent(ctk.CTkCanvas):
         self.create_rectangle(
             cx - stand_w // 2, stand_top,
             cx + stand_w // 2, stand_bot,
-            fill="#475569", outline=""
+            fill="#222630", outline=""
         )
 
         base_w = int(screen_w * 0.52)
@@ -81,13 +81,13 @@ class ComputerIconComponent(ctk.CTkCanvas):
         self.create_rectangle(
             cx - base_w // 2, stand_bot,
             cx + base_w // 2, stand_bot + base_h,
-            fill="#64748b", outline=""
+            fill="#2E3440", outline=""
         )
 
         # Carcasa y Pantalla (marco cerrado de 4 lados garantizado)
         fill_color = cfg["icon_fill"]
         outline_color = cfg["icon_outline"]
-        self.create_rectangle(x1, y1, x2, y2, fill=fill_color, outline=outline_color, width=2)
+        self.create_rectangle(x1, y1, x2, y2, fill=fill_color, outline=outline_color, width=1.8)
 
         # Símbolos interiores centrados
         if state == "online":
@@ -96,17 +96,17 @@ class ComputerIconComponent(ctk.CTkCanvas):
                 cx - 2, cy + 5,
                 cx + 7, cy - 4,
                 fill=outline_color,
-                width=2.5,
+                width=2,
                 capstyle=tk.ROUND,
                 joinstyle=tk.ROUND
             )
         elif state == "offline":
             offset = 5
-            self.create_line(cx - offset, cy - offset, cx + offset, cy + offset, fill=outline_color, width=2.5, capstyle=tk.ROUND)
-            self.create_line(cx - offset, cy + offset, cx + offset, cy - offset, fill=outline_color, width=2.5, capstyle=tk.ROUND)
+            self.create_line(cx - offset, cy - offset, cx + offset, cy + offset, fill=outline_color, width=2, capstyle=tk.ROUND)
+            self.create_line(cx - offset, cy + offset, cx + offset, cy - offset, fill=outline_color, width=2, capstyle=tk.ROUND)
         elif state == "error":
             poly = [cx, cy - 6, cx - 7, cy + 6, cx + 7, cy + 6]
-            self.create_polygon(poly, fill=outline_color, outline="#b45309")
-            self.create_text(cx, cy + 1, text="!", fill="#1e293b", font=("Segoe UI", 8, "bold"))
+            self.create_polygon(poly, fill=outline_color, outline="#B45309")
+            self.create_text(cx, cy + 1, text="!", fill="#090A0D", font=("Segoe UI", 8, "bold"))
         else:  # pending
-            self.create_text(cx, cy, text="⋯", fill="#94a3b8", font=("Segoe UI", 11, "bold"))
+            self.create_text(cx, cy, text="...", fill="#64748B", font=("Segoe UI", 10, "bold"))

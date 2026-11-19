@@ -8,11 +8,17 @@ from typing import Callable, List, Optional
 import customtkinter as ctk
 
 from core.config import (
-    ACCENT_BLUE,
+    ACCENT_EMERALD,
+    BG_BORDER_BUTTON,
+    BG_BTN_SECONDARY,
     BG_CARD,
     BG_INPUT,
+    BG_ROW,
     FONTS,
+    HOVER_SECONDARY,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
 
 
@@ -45,12 +51,13 @@ class ZoneDropdownInput(ctk.CTkFrame):
             self,
             font=FONTS["body_normal"],
             height=height,
-            fg_color=BG_CARD,
-            border_color=BG_INPUT,
+            fg_color=BG_INPUT,
+            border_color=BG_BORDER_BUTTON,
             border_width=1,
+            corner_radius=UI_RADIUS,
             text_color=TEXT_PRIMARY,
         )
-        self.entry.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 2))
+        self.entry.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
 
         self.btn_drop = ctk.CTkButton(
             self,
@@ -58,11 +65,12 @@ class ZoneDropdownInput(ctk.CTkFrame):
             width=28,
             height=height,
             font=FONTS["body_bold"],
-            fg_color=BG_CARD,
-            hover_color=BG_INPUT,
-            text_color="#38bdf8",
-            border_color=BG_INPUT,
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            text_color=TEXT_SECONDARY,
+            border_color=BG_BORDER_BUTTON,
             border_width=1,
+            corner_radius=UI_RADIUS,
             command=self._show_dropdown
         )
         self.btn_drop.pack(side=tk.RIGHT)
@@ -92,13 +100,15 @@ class ZoneDropdownInput(ctk.CTkFrame):
             tearoff=0,
             bg=BG_CARD,
             fg=TEXT_PRIMARY,
-            activebackground=ACCENT_BLUE,
-            activeforeground=TEXT_PRIMARY,
+            activebackground=BG_ROW,
+            activeforeground=ACCENT_EMERALD,
+            bd=1,
+            relief="solid",
             font=("Segoe UI", 9)
         )
         for z in zones:
             menu.add_command(
-                label=f"📍 {z}",
+                label=f"  {z}",
                 command=lambda val=z: self.set(val)
             )
 

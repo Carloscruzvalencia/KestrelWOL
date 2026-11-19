@@ -8,6 +8,8 @@ from typing import Any, Callable, Dict, List, Optional
 import customtkinter as ctk
 
 from core.config import (
+    BG_BORDER,
+    BG_BORDER_HOVER,
     BG_DARK,
     BREAKPOINT_THREE_COLUMNS,
     FONTS,
@@ -37,6 +39,8 @@ class DeviceGridView(ctk.CTkScrollableFrame):
         super().__init__(
             parent,
             fg_color=BG_DARK,
+            scrollbar_button_color=BG_BORDER,
+            scrollbar_button_hover_color=BG_BORDER_HOVER,
             corner_radius=0,
             **kwargs
         )

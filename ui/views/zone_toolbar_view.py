@@ -1,6 +1,6 @@
 """
 Vista de Barra de Presets de Zonas (ui/views/zone_toolbar_view.py)
-KestrelWOL - CustomTkinter
+KestrelWOL - CustomTkinter (Industrial Enterprise Dark Mode)
 """
 
 import tkinter as tk
@@ -8,24 +8,27 @@ from typing import Callable, Dict, List, Optional
 import customtkinter as ctk
 
 from core.config import (
-    ACCENT_BLUE,
     ACCENT_EMERALD,
-    BG_INPUT,
+    BG_BORDER,
+    BG_BORDER_BUTTON,
+    BG_BTN_SECONDARY,
+    BG_ROW,
     FONTS,
-    HOVER_BLUE,
-    HOVER_EMERALD,
     HOVER_SECONDARY,
+    TEXT_DISABLED,
     TEXT_MUTED,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
+from ui.components.icons import get_icon
 
 
 class ZoneToolbarView(ctk.CTkFrame):
     """
     Barra horizontal con selector de presets de zonas y botón rápido de encendido:
     - Botones dinámicos: [Todos (N)], [Zona A (M)], [Zona B (K)]...
-    - Botón de encendido por zona contextual.
-    - Notifica cambios de selección y órdenes de encendido al orquestador.
+    - Botón de visibilidad global de red y encendido por zona contextual.
     """
 
     def __init__(
@@ -76,9 +79,11 @@ class ZoneToolbarView(ctk.CTkFrame):
         # Etiqueta Presets
         ctk.CTkLabel(
             self.left_box,
-            text="🏷️ Presets:",
-            font=FONTS["body_bold"],
-            text_color=TEXT_MUTED
+            text="  ZONAS",
+            image=get_icon("tag", TEXT_DISABLED, 13),
+            compound="left",
+            font=FONTS["micro"],
+            text_color=TEXT_DISABLED
         ).pack(side=tk.LEFT, padx=(0, 8))
 
         # Botones de cada zona
@@ -87,51 +92,63 @@ class ZoneToolbarView(ctk.CTkFrame):
             count = zone_counts.get(z, 0)
             btn_text = f"{z} ({count})"
 
-            fg_col = ACCENT_BLUE if is_active else BG_INPUT
-            hov_col = HOVER_BLUE if is_active else HOVER_SECONDARY
+            fg_col = BG_ROW if is_active else BG_BTN_SECONDARY
+            border_col = ACCENT_EMERALD if is_active else BG_BORDER
+            txt_col = TEXT_PRIMARY if is_active else TEXT_MUTED
 
             ctk.CTkButton(
                 self.left_box,
                 text=btn_text,
                 font=FONTS["caption_bold"],
                 fg_color=fg_col,
-                hover_color=hov_col,
-                text_color=TEXT_PRIMARY,
+                hover_color=HOVER_SECONDARY,
+                border_width=1,
+                border_color=border_col,
+                text_color=txt_col,
                 height=28,
-                corner_radius=6,
+                corner_radius=UI_RADIUS,
                 command=lambda val=z: self._select_zone(val)
             ).pack(side=tk.LEFT, padx=(0, 6))
 
         # Botón Encender Zona Activa
         act_count = zone_counts.get(selected_zone, 0)
         if selected_zone == "Todos":
-            wake_text = f"⚡ Encender Todos ({act_count})"
+            wake_text = f"Encender Todos ({act_count})"
         else:
-            wake_text = f"⚡ Encender {selected_zone} ({act_count})"
+            wake_text = f"Encender {selected_zone} ({act_count})"
 
         ctk.CTkButton(
             self.right_box,
             text=wake_text,
+            image=get_icon("power", ACCENT_EMERALD, 14),
+            compound="left",
             font=FONTS["body_bold"],
-            fg_color=ACCENT_EMERALD,
-            hover_color=HOVER_EMERALD,
-            text_color=TEXT_PRIMARY,
+            fg_color="#102820",
+            hover_color="#16382D",
+            border_width=1,
+            border_color="#1D4D3D",
+            text_color=ACCENT_EMERALD,
             height=28,
-            corner_radius=6,
+            corner_radius=UI_RADIUS,
             command=lambda: self.on_wake_zone(self._active_zone) if self.on_wake_zone else None
         ).pack(side=tk.RIGHT)
 
         # Botón Mostrar/Ocultar Red (IP y MAC) Globalmente
-        toggle_label = "🔒 Ocultar Red" if self._network_visible else "👁️ Ver Red"
+        toggle_label = "Ocultar Red" if self._network_visible else "Ver Red"
+        toggle_icon = "eye_off" if self._network_visible else "eye"
         self.btn_toggle_network = ctk.CTkButton(
             self.right_box,
             text=toggle_label,
+            image=get_icon(toggle_icon, TEXT_SECONDARY, 14),
+            compound="left",
             font=FONTS["caption_bold"],
-            fg_color="#1e293b",
-            hover_color="#334155",
-            text_color="#94a3b8",
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
             height=28,
-            corner_radius=6,
+            corner_radius=UI_RADIUS,
             command=self._handle_toggle_network
         )
         self.btn_toggle_network.pack(side=tk.RIGHT, padx=(0, 8))
@@ -142,11 +159,11 @@ class ZoneToolbarView(ctk.CTkFrame):
             self._network_visible = bool(new_state)
             if hasattr(self, "btn_toggle_network") and self.btn_toggle_network:
                 self.btn_toggle_network.configure(
-                    text="🔒 Ocultar Red" if self._network_visible else "👁️ Ver Red"
+                    text="Ocultar Red" if self._network_visible else "Ver Red",
+                    image=get_icon("eye_off" if self._network_visible else "eye", TEXT_SECONDARY, 14)
                 )
 
     def _select_zone(self, zone_name: str) -> None:
         self._active_zone = zone_name
         if self.on_zone_selected:
             self.on_zone_selected(zone_name)
-

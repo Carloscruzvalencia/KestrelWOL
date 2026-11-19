@@ -9,17 +9,22 @@ import customtkinter as ctk
 
 from core.config import (
     AUDIT_LOG_FILE,
+    BG_BORDER,
+    BG_BORDER_BUTTON,
+    BG_BTN_SECONDARY,
     BG_CARD,
     BG_CONTAINER_DARK,
     BG_DARK,
-    BG_INPUT,
     FONTS,
     HOVER_SECONDARY,
     MODAL_SIZES,
     TEXT_MUTED,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
 from services.audit_service import AuditService
+from ui.components.icons import get_icon
 
 
 class AuditViewerModal(ctk.CTkToplevel):
@@ -35,7 +40,7 @@ class AuditViewerModal(ctk.CTkToplevel):
         self.audit = audit_service or AuditService()
 
         w, h = MODAL_SIZES["audit_viewer"]
-        self.title("📋 Registro de Auditoría y Trazabilidad (NIS 2 / ENS)")
+        self.title("Registro de Auditoría y Trazabilidad (NIS 2 / ENS)")
         self.geometry(f"{w}x{h}")
         self.configure(fg_color=BG_DARK)
 
@@ -46,24 +51,37 @@ class AuditViewerModal(ctk.CTkToplevel):
         self.load_log()
 
     def _build_ui(self) -> None:
-        header = ctk.CTkFrame(self, fg_color=BG_CARD, corner_radius=8)
+        header = ctk.CTkFrame(
+            self,
+            fg_color=BG_CARD,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS
+        )
         header.pack(fill=tk.X, padx=16, pady=(16, 10))
 
         ctk.CTkLabel(
             header,
-            text="📋 Registro Local de Auditoría (audit.log)",
+            text="  Registro Local de Auditoría (audit.log)",
+            image=get_icon("file", TEXT_PRIMARY, 15),
+            compound="left",
             font=FONTS["title_section"],
             text_color=TEXT_PRIMARY
         ).pack(side=tk.LEFT, padx=14, pady=10)
 
         ctk.CTkButton(
             header,
-            text="🔄 Refrescar",
+            text="Refrescar",
+            image=get_icon("refresh", TEXT_SECONDARY, 14),
+            compound="left",
             font=FONTS["caption_bold"],
-            fg_color=BG_INPUT,
+            fg_color=BG_BTN_SECONDARY,
             hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
             height=28,
+            corner_radius=UI_RADIUS,
             command=self.load_log
         ).pack(side=tk.RIGHT, padx=14, pady=10)
 
@@ -71,8 +89,10 @@ class AuditViewerModal(ctk.CTkToplevel):
             self,
             font=FONTS["mono_log"],
             fg_color=BG_CONTAINER_DARK,
-            text_color="#38bdf8",
-            corner_radius=8
+            border_width=1,
+            border_color=BG_BORDER,
+            text_color=TEXT_SECONDARY,
+            corner_radius=UI_RADIUS
         )
         self.txt_log.pack(fill=tk.BOTH, expand=True, padx=16, pady=(0, 10))
 
@@ -82,7 +102,7 @@ class AuditViewerModal(ctk.CTkToplevel):
         ctk.CTkLabel(
             footer,
             text=f"Ruta: {AUDIT_LOG_FILE}",
-            font=FONTS["caption_normal"],
+            font=FONTS["mono_log"],
             text_color=TEXT_MUTED
         ).pack(side=tk.LEFT)
 
@@ -90,9 +110,13 @@ class AuditViewerModal(ctk.CTkToplevel):
             footer,
             text="Cerrar",
             font=FONTS["body_normal"],
-            fg_color=BG_INPUT,
+            fg_color=BG_BTN_SECONDARY,
             hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            height=30,
+            corner_radius=UI_RADIUS,
             command=self.destroy
         ).pack(side=tk.RIGHT)
 

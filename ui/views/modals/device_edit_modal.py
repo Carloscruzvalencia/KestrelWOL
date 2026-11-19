@@ -1,6 +1,6 @@
 """
 Modal de Edición de Parámetros de Dispositivo (ui/views/modals/device_edit_modal.py)
-KestrelWOL - CustomTkinter
+KestrelWOL - CustomTkinter (Industrial Enterprise Dark Mode)
 """
 
 import tkinter as tk
@@ -9,18 +9,26 @@ from typing import Any, Callable, Dict, List, Optional
 import customtkinter as ctk
 
 from core.config import (
-    ACCENT_BLUE,
+    ACCENT_EMERALD,
+    BG_BORDER,
+    BG_BORDER_BUTTON,
+    BG_BTN_SECONDARY,
     BG_CARD,
     BG_DARK,
     BG_INPUT,
+    BUTTON_PRIMARY_TEXT,
     FONTS,
-    HOVER_BLUE,
+    HOVER_EMERALD,
     HOVER_SECONDARY,
     MODAL_SIZES,
+    TEXT_DISABLED,
     TEXT_MUTED,
     TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    UI_RADIUS,
 )
 from services.wol_service import WolService
+from ui.components.icons import get_icon
 from ui.components.zone_dropdown_input import ZoneDropdownInput
 
 
@@ -52,12 +60,20 @@ class DeviceEditModal(ctk.CTkToplevel):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        header = ctk.CTkFrame(self, fg_color=BG_CARD, corner_radius=8)
+        header = ctk.CTkFrame(
+            self,
+            fg_color=BG_CARD,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS
+        )
         header.pack(fill=tk.X, padx=16, pady=(16, 10))
 
         ctk.CTkLabel(
             header,
-            text="✏️ Modificar Parámetros del Equipo",
+            text="  Modificar Parámetros del Equipo",
+            image=get_icon("edit", TEXT_PRIMARY, 15),
+            compound="left",
             font=FONTS["title_section"],
             text_color=TEXT_PRIMARY,
             anchor="w"
@@ -65,38 +81,53 @@ class DeviceEditModal(ctk.CTkToplevel):
 
         ctk.CTkLabel(
             header,
-            text=f"Puesto: {self.machine.get('name')} | IP: {self.machine.get('ip')}",
-            font=FONTS["caption_normal"],
+            text=f"Puesto: {self.machine.get('name')}  |  IP: {self.machine.get('ip')}",
+            font=FONTS["mono_log"],
             text_color=TEXT_MUTED,
             anchor="w"
         ).pack(anchor="w", padx=14, pady=(0, 10))
 
-        form = ctk.CTkFrame(self, fg_color=BG_CARD, corner_radius=8)
+        form = ctk.CTkFrame(
+            self,
+            fg_color=BG_CARD,
+            border_width=1,
+            border_color=BG_BORDER,
+            corner_radius=UI_RADIUS
+        )
         form.pack(fill=tk.BOTH, expand=True, padx=16, pady=(0, 12))
 
+        entry_kwargs = {
+            "height": 30,
+            "fg_color": BG_INPUT,
+            "border_color": BG_BORDER_BUTTON,
+            "border_width": 1,
+            "corner_radius": UI_RADIUS,
+            "text_color": TEXT_PRIMARY,
+        }
+
         # 1. Nombre
-        ctk.CTkLabel(form, text="Nombre del Equipo:", font=FONTS["body_bold"], text_color=TEXT_MUTED).pack(anchor="w", padx=14, pady=(10, 2))
-        self.entry_name = ctk.CTkEntry(form, font=FONTS["body_normal"], height=30, fg_color=BG_DARK, border_color=BG_INPUT, border_width=1)
+        ctk.CTkLabel(form, text="Nombre del Equipo", font=FONTS["caption_bold"], text_color=TEXT_DISABLED).pack(anchor="w", padx=14, pady=(12, 2))
+        self.entry_name = ctk.CTkEntry(form, font=FONTS["body_normal"], **entry_kwargs)
         self.entry_name.insert(0, self.machine.get("name", ""))
         self.entry_name.pack(fill=tk.X, padx=14, pady=(0, 8))
 
         # 2. IP
-        ctk.CTkLabel(form, text="Dirección IP:", font=FONTS["body_bold"], text_color=TEXT_MUTED).pack(anchor="w", padx=14, pady=(0, 2))
-        self.entry_ip = ctk.CTkEntry(form, font=FONTS["body_normal"], height=30, fg_color=BG_DARK, border_color=BG_INPUT, border_width=1)
+        ctk.CTkLabel(form, text="Dirección IP", font=FONTS["caption_bold"], text_color=TEXT_DISABLED).pack(anchor="w", padx=14, pady=(0, 2))
+        self.entry_ip = ctk.CTkEntry(form, font=FONTS["mono_data"], **entry_kwargs)
         self.entry_ip.insert(0, self.machine.get("ip", ""))
         self.entry_ip.pack(fill=tk.X, padx=14, pady=(0, 8))
 
         # 3. MAC
-        ctk.CTkLabel(form, text="Dirección MAC:", font=FONTS["body_bold"], text_color=TEXT_MUTED).pack(anchor="w", padx=14, pady=(0, 2))
-        self.entry_mac = ctk.CTkEntry(form, font=FONTS["body_normal"], height=30, fg_color=BG_DARK, border_color=BG_INPUT, border_width=1)
+        ctk.CTkLabel(form, text="Dirección MAC", font=FONTS["caption_bold"], text_color=TEXT_DISABLED).pack(anchor="w", padx=14, pady=(0, 2))
+        self.entry_mac = ctk.CTkEntry(form, font=FONTS["mono_data"], **entry_kwargs)
         self.entry_mac.insert(0, self.machine.get("mac", ""))
         self.entry_mac.pack(fill=tk.X, padx=14, pady=(0, 8))
 
         # 4. Zona
-        ctk.CTkLabel(form, text="Zona / Sala:", font=FONTS["body_bold"], text_color=TEXT_MUTED).pack(anchor="w", padx=14, pady=(0, 2))
+        ctk.CTkLabel(form, text="Zona / Sala", font=FONTS["caption_bold"], text_color=TEXT_DISABLED).pack(anchor="w", padx=14, pady=(0, 2))
         self.entry_zone = ZoneDropdownInput(form, get_zones_callback=self.get_zones_callback, height=30)
         self.entry_zone.set(self.machine.get("zone", "General"))
-        self.entry_zone.pack(fill=tk.X, padx=14, pady=(0, 10))
+        self.entry_zone.pack(fill=tk.X, padx=14, pady=(0, 12))
 
         footer = ctk.CTkFrame(self, fg_color="transparent")
         footer.pack(fill=tk.X, padx=16, pady=(0, 14))
@@ -105,19 +136,27 @@ class DeviceEditModal(ctk.CTkToplevel):
             footer,
             text="Cancelar",
             font=FONTS["body_normal"],
-            fg_color=BG_INPUT,
+            fg_color=BG_BTN_SECONDARY,
             hover_color=HOVER_SECONDARY,
-            text_color=TEXT_PRIMARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            height=30,
+            corner_radius=UI_RADIUS,
             command=self.destroy
         ).pack(side=tk.LEFT)
 
         ctk.CTkButton(
             footer,
-            text="💾 Guardar Cambios",
+            text="Guardar Cambios",
+            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
+            compound="left",
             font=FONTS["body_bold"],
-            fg_color=ACCENT_BLUE,
-            hover_color=HOVER_BLUE,
-            text_color=TEXT_PRIMARY,
+            fg_color=ACCENT_EMERALD,
+            hover_color=HOVER_EMERALD,
+            text_color=BUTTON_PRIMARY_TEXT,
+            height=30,
+            corner_radius=UI_RADIUS,
             command=self._save
         ).pack(side=tk.RIGHT)
 
