@@ -53,6 +53,7 @@ class SafetyConfirmModal(ctk.CTkToplevel):
         w, h = MODAL_SIZES["safety_confirm"]
         self.title("Confirmación de Seguridad Operativa")
         self.geometry(f"{w}x{h}")
+        self.minsize(w, h)
         self.configure(fg_color=BG_DARK)
 
         self.transient(parent)

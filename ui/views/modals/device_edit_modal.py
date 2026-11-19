@@ -52,6 +52,7 @@ class DeviceEditModal(ctk.CTkToplevel):
         w, h = MODAL_SIZES["device_edit"]
         self.title(f"Editar Dispositivo: {machine.get('name')}")
         self.geometry(f"{w}x{h}")
+        self.minsize(w, h)
         self.configure(fg_color=BG_DARK)
 
         self.transient(parent)
@@ -87,6 +88,40 @@ class DeviceEditModal(ctk.CTkToplevel):
             anchor="w"
         ).pack(anchor="w", padx=14, pady=(0, 10))
 
+        # Pie de botones fijado abajo antes del formulario expandible para evitar recortes
+        footer = ctk.CTkFrame(self, fg_color="transparent")
+        footer.pack(side=tk.BOTTOM, fill=tk.X, padx=16, pady=(0, 14))
+
+        ctk.CTkButton(
+            footer,
+            text="Cancelar",
+            font=FONTS["body_normal"],
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            width=0,
+            height=32,
+            corner_radius=UI_RADIUS,
+            command=self.destroy
+        ).pack(side=tk.LEFT)
+
+        ctk.CTkButton(
+            footer,
+            text="Guardar Cambios",
+            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
+            compound="left",
+            font=FONTS["body_bold"],
+            fg_color=ACCENT_EMERALD,
+            hover_color=HOVER_EMERALD,
+            text_color=BUTTON_PRIMARY_TEXT,
+            width=0,
+            height=32,
+            corner_radius=UI_RADIUS,
+            command=self._save
+        ).pack(side=tk.RIGHT)
+
         form = ctk.CTkFrame(
             self,
             fg_color=BG_CARD,
@@ -97,7 +132,7 @@ class DeviceEditModal(ctk.CTkToplevel):
         form.pack(fill=tk.BOTH, expand=True, padx=16, pady=(0, 12))
 
         entry_kwargs = {
-            "height": 30,
+            "height": 32,
             "fg_color": BG_INPUT,
             "border_color": BG_BORDER_BUTTON,
             "border_width": 1,
@@ -125,40 +160,9 @@ class DeviceEditModal(ctk.CTkToplevel):
 
         # 4. Zona
         ctk.CTkLabel(form, text="Zona / Sala", font=FONTS["caption_bold"], text_color=TEXT_DISABLED).pack(anchor="w", padx=14, pady=(0, 2))
-        self.entry_zone = ZoneDropdownInput(form, get_zones_callback=self.get_zones_callback, height=30)
+        self.entry_zone = ZoneDropdownInput(form, get_zones_callback=self.get_zones_callback, height=32)
         self.entry_zone.set(self.machine.get("zone", "General"))
         self.entry_zone.pack(fill=tk.X, padx=14, pady=(0, 12))
-
-        footer = ctk.CTkFrame(self, fg_color="transparent")
-        footer.pack(fill=tk.X, padx=16, pady=(0, 14))
-
-        ctk.CTkButton(
-            footer,
-            text="Cancelar",
-            font=FONTS["body_normal"],
-            fg_color=BG_BTN_SECONDARY,
-            hover_color=HOVER_SECONDARY,
-            border_width=1,
-            border_color=BG_BORDER_BUTTON,
-            text_color=TEXT_SECONDARY,
-            height=30,
-            corner_radius=UI_RADIUS,
-            command=self.destroy
-        ).pack(side=tk.LEFT)
-
-        ctk.CTkButton(
-            footer,
-            text="Guardar Cambios",
-            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
-            compound="left",
-            font=FONTS["body_bold"],
-            fg_color=ACCENT_EMERALD,
-            hover_color=HOVER_EMERALD,
-            text_color=BUTTON_PRIMARY_TEXT,
-            height=30,
-            corner_radius=UI_RADIUS,
-            command=self._save
-        ).pack(side=tk.RIGHT)
 
     def _save(self) -> None:
         name = self.entry_name.get().strip()

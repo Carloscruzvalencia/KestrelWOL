@@ -48,9 +48,10 @@ class RemoteControlModal(ctk.CTkToplevel):
         self.machine = machine
         self.audit = audit_service or AuditService()
 
-        w, h = MODAL_SIZES.get("remote_control", (580, 530))
+        w, h = MODAL_SIZES.get("remote_control", (580, 560))
         self.title(f"Control y Conexión Remota - {machine.get('name', 'Puesto')}")
         self.geometry(f"{w}x{h}")
+        self.minsize(w, h)
         self.configure(fg_color=BG_DARK)
 
         self.transient(parent)
@@ -247,7 +248,11 @@ class RemoteControlModal(ctk.CTkToplevel):
 
         def _worker():
             results = SystemService.check_machine_services(ip)
-            self.after(0, lambda: self._apply_service_results(results))
+            try:
+                if self.winfo_exists():
+                    self.after(0, lambda: self._apply_service_results(results))
+            except (tk.TclError, RuntimeError):
+                pass
 
         threading.Thread(target=_worker, daemon=True).start()
 

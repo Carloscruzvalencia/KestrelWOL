@@ -41,8 +41,8 @@ class DeviceCardComponent(ctk.CTkFrame):
     Tarjeta individual de puesto (diseño cuadrado/modular preservado):
     - Superficie #111318 con borde hairline 1px (#222630 -> #2E3440 en hover).
     - Telemetría con punto circular de 6px y micro-etiquetas en mayúsculas.
-    - Iconografía vectorial monocroma de contorno (trazo 1.5px), cero emojis.
-    - Botones monocromos (#1A1E26 / borde #2A303C) y acción destructiva neutra hasta hover (#EF4444).
+    - Botones con width=0 para evitar recortes en anchos de 2 o 3 columnas.
+    - Menú contextual oscuro (`...`) para Editar / Eliminar sin saturar la tarjeta.
     """
 
     def __init__(
@@ -89,7 +89,7 @@ class DeviceCardComponent(ctk.CTkFrame):
 
     def _build_ui(self) -> None:
         # ======================================================================
-        # 1. CABECERA: Nombre + Zona + Telemetría de Estado (punto 6px + texto)
+        # 1. CABECERA: Nombre + Etiqueta Zona compacta + Telemetría (punto 6px)
         # ======================================================================
         header_frame = ctk.CTkFrame(self, fg_color="transparent")
         header_frame.pack(fill=tk.X, padx=12, pady=(10, 6))
@@ -111,12 +111,13 @@ class DeviceCardComponent(ctk.CTkFrame):
             text=zone_name,
             image=get_icon("tag", TEXT_MUTED, 11),
             compound="left",
-            font=FONTS["micro"],
+            font=FONTS["caption_normal"],
             fg_color=BG_ROW,
             hover_color=HOVER_SECONDARY,
             border_width=1,
             border_color=BG_BORDER,
             text_color=TEXT_MUTED,
+            width=0,
             height=22,
             corner_radius=UI_RADIUS,
             command=lambda: self.on_edit(self.machine) if self.on_edit else None
@@ -130,9 +131,8 @@ class DeviceCardComponent(ctk.CTkFrame):
             compound="left",
             font=FONTS["micro"],
             text_color=TEXT_MUTED,
-            fg_color=BG_ROW,
-            corner_radius=UI_RADIUS,
-            padx=8,
+            fg_color="transparent",
+            padx=4,
             pady=2
         )
         self.lbl_status.pack(side=tk.RIGHT)
@@ -141,9 +141,9 @@ class DeviceCardComponent(ctk.CTkFrame):
         # 2. CUERPO: Icono Vectorial + IP/MAC Monoespaciado + Diagnóstico
         # ======================================================================
         body_frame = ctk.CTkFrame(self, fg_color="transparent")
-        body_frame.pack(fill=tk.X, padx=12, pady=(0, 8))
+        body_frame.pack(fill=tk.X, padx=12, pady=(0, 6))
 
-        self.comp_icon = ComputerIconComponent(body_frame, size=(48, 42), bg_color=BG_CARD)
+        self.comp_icon = ComputerIconComponent(body_frame, size=(46, 40), bg_color=BG_CARD)
         self.comp_icon.pack(side=tk.LEFT, padx=(0, 8))
 
         info_box = ctk.CTkFrame(
@@ -199,9 +199,9 @@ class DeviceCardComponent(ctk.CTkFrame):
 
         self._update_network_display()
 
-        # Columna B: Diagnóstico de Servicios de Red (Micro-indicadores con punto 6px)
+        # Columna B: Diagnóstico de Servicios de Red (Apilados verticalmente para compactar ancho)
         diag_subframe = ctk.CTkFrame(info_box, fg_color="transparent")
-        diag_subframe.pack(side=tk.RIGHT, padx=8, pady=5)
+        diag_subframe.pack(side=tk.RIGHT, padx=8, pady=4)
 
         self.lbl_rdp_diag = ctk.CTkLabel(
             diag_subframe,
@@ -213,9 +213,9 @@ class DeviceCardComponent(ctk.CTkFrame):
             fg_color=BG_ROW,
             corner_radius=UI_RADIUS,
             padx=7,
-            pady=2
+            pady=1
         )
-        self.lbl_rdp_diag.pack(side=tk.LEFT, padx=(0, 4))
+        self.lbl_rdp_diag.pack(anchor="e", pady=(0, 3))
 
         self.lbl_ssh_diag = ctk.CTkLabel(
             diag_subframe,
@@ -227,15 +227,15 @@ class DeviceCardComponent(ctk.CTkFrame):
             fg_color=BG_ROW,
             corner_radius=UI_RADIUS,
             padx=7,
-            pady=2
+            pady=1
         )
-        self.lbl_ssh_diag.pack(side=tk.LEFT)
+        self.lbl_ssh_diag.pack(anchor="e")
 
         # ======================================================================
-        # 3. BARRA HORARIO PROGRAMADO
+        # 3. BARRA HORARIO PROGRAMADO (discreta)
         # ======================================================================
         sched_bar = ctk.CTkFrame(self, fg_color="transparent")
-        sched_bar.pack(fill=tk.X, padx=12, pady=(0, 8))
+        sched_bar.pack(fill=tk.X, padx=12, pady=(0, 6))
 
         sched_text, sched_color = self._format_schedule_text()
         has_sched = bool(self.machine.get("schedule", {}).get("enabled"))
@@ -244,7 +244,7 @@ class DeviceCardComponent(ctk.CTkFrame):
             text=f"  {sched_text}",
             image=get_icon("clock", ACCENT_AMBER if has_sched else TEXT_DISABLED, 12),
             compound="left",
-            font=FONTS["micro"],
+            font=FONTS["caption_bold"] if has_sched else FONTS["caption_normal"],
             text_color=sched_color,
             fg_color=BG_ROW if has_sched else "transparent",
             corner_radius=UI_RADIUS,
@@ -255,17 +255,18 @@ class DeviceCardComponent(ctk.CTkFrame):
         self.lbl_sched.pack(side=tk.LEFT)
 
         # ======================================================================
-        # 4. FILA 1 DE BOTONES: CONTROL DE ENERGÍA (ENCENDER / APAGAR / REINICIAR)
+        # 4. FILA 1 DE BOTONES: CONTROL DE ENERGÍA (width=0 evita recortes)
         # ======================================================================
         row_power = ctk.CTkFrame(self, fg_color="transparent")
         row_power.pack(fill=tk.X, padx=12, pady=(0, 5))
 
-        # Encender (Sutil acento esmeralda industrial sobre superficie oscura)
+        # Encender
         self.btn_wake = ctk.CTkButton(
             row_power,
             text="Encender",
             image=get_icon("power", ACCENT_EMERALD, 14),
             compound="left",
+            width=0,
             height=30,
             font=FONTS["body_bold"],
             fg_color="#102820",
@@ -284,6 +285,7 @@ class DeviceCardComponent(ctk.CTkFrame):
             text="Apagar",
             image=get_icon("power_off", TEXT_MUTED, 14),
             compound="left",
+            width=0,
             height=30,
             font=FONTS["caption_bold"],
             fg_color=BG_BTN_SECONDARY,
@@ -301,6 +303,7 @@ class DeviceCardComponent(ctk.CTkFrame):
             text="Reiniciar",
             image=get_icon("refresh", TEXT_SECONDARY, 14),
             compound="left",
+            width=0,
             height=30,
             font=FONTS["caption_bold"],
             fg_color=BG_BTN_SECONDARY,
@@ -313,7 +316,7 @@ class DeviceCardComponent(ctk.CTkFrame):
         ).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(4, 0))
 
         # ======================================================================
-        # 5. FILA 2 DE BOTONES: ACCESO REMOTO Y HERRAMIENTAS (RDP / SSH / HORARIO)
+        # 5. FILA 2 DE BOTONES: ACCESO REMOTO + MENÚ CONTEXTUAL (...)
         # ======================================================================
         row_tools = ctk.CTkFrame(self, fg_color="transparent")
         row_tools.pack(fill=tk.X, padx=12, pady=(0, 10))
@@ -324,6 +327,7 @@ class DeviceCardComponent(ctk.CTkFrame):
             text="RDP",
             image=get_icon("monitor", TEXT_SECONDARY, 14),
             compound="left",
+            width=0,
             height=30,
             font=FONTS["caption_bold"],
             fg_color=BG_BTN_SECONDARY,
@@ -341,6 +345,7 @@ class DeviceCardComponent(ctk.CTkFrame):
             text="SSH",
             image=get_icon("terminal", TEXT_SECONDARY, 14),
             compound="left",
+            width=0,
             height=30,
             font=FONTS["caption_bold"],
             fg_color=BG_BTN_SECONDARY,
@@ -358,6 +363,7 @@ class DeviceCardComponent(ctk.CTkFrame):
             text="Horario",
             image=get_icon("clock", ACCENT_AMBER if has_sched else TEXT_SECONDARY, 14),
             compound="left",
+            width=0,
             height=30,
             font=FONTS["caption_bold"],
             fg_color=BG_BTN_SECONDARY,
@@ -369,35 +375,56 @@ class DeviceCardComponent(ctk.CTkFrame):
             command=lambda: self.on_schedule(self.machine) if self.on_schedule else None
         ).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
 
-        # Editar dispositivo (botón monocromo)
-        ctk.CTkButton(
+        # Botón de opciones contextuales (...) -> Editar / Eliminar (sin aplastar botones)
+        self.btn_more = ctk.CTkButton(
             row_tools,
             text="",
-            image=get_icon("edit", TEXT_SECONDARY, 14),
-            width=30,
+            image=get_icon("more", TEXT_SECONDARY, 14),
+            width=34,
             height=30,
             fg_color=BG_BTN_SECONDARY,
             hover_color=HOVER_SECONDARY,
             border_width=1,
             border_color=BG_BORDER_BUTTON,
             corner_radius=UI_RADIUS,
-            command=lambda: self.on_edit(self.machine) if self.on_edit else None
-        ).pack(side=tk.LEFT, padx=2)
+            command=self._show_context_menu
+        )
+        self.btn_more.pack(side=tk.LEFT, padx=(4, 0))
 
-        # Eliminar dispositivo (neutro hasta hover rojo destructivo #EF4444)
-        ctk.CTkButton(
-            row_tools,
-            text="",
-            image=get_icon("trash", TEXT_MUTED, 14),
-            width=30,
-            height=30,
-            fg_color=BG_BTN_SECONDARY,
-            hover_color=ACCENT_ROSE,
-            border_width=1,
-            border_color=BG_BORDER_BUTTON,
-            corner_radius=UI_RADIUS,
+    def _show_context_menu(self) -> None:
+        """Abre un menú contextual oscuro con las acciones de gestión de la tarjeta."""
+        menu = tk.Menu(
+            self,
+            tearoff=0,
+            bg=BG_CARD,
+            fg=TEXT_PRIMARY,
+            activebackground=BG_ROW,
+            activeforeground=ACCENT_EMERALD,
+            bd=1,
+            relief="solid",
+            font=("Segoe UI", 9)
+        )
+        menu.add_command(
+            label="  Editar dispositivo",
+            command=lambda: self.on_edit(self.machine) if self.on_edit else None
+        )
+        menu.add_command(
+            label="  Programar horario",
+            command=lambda: self.on_schedule(self.machine) if self.on_schedule else None
+        )
+        menu.add_separator()
+        menu.add_command(
+            label="  Eliminar dispositivo",
+            foreground=ACCENT_ROSE,
+            activeforeground=ACCENT_ROSE,
             command=lambda: self.on_delete(self.machine) if self.on_delete else None
-        ).pack(side=tk.LEFT, padx=(2, 0))
+        )
+        try:
+            x = self.btn_more.winfo_rootx()
+            y = self.btn_more.winfo_rooty() + self.btn_more.winfo_height()
+            menu.tk_popup(x, y)
+        except Exception:
+            pass
 
     # ==========================================================================
     # LÓGICA DE CONTROL, TELEMETRÍA Y ACCIONES
@@ -405,7 +432,7 @@ class DeviceCardComponent(ctk.CTkFrame):
     def _format_schedule_text(self) -> tuple[str, str]:
         schedule = self.machine.get("schedule")
         if not schedule or not schedule.get("enabled") or not schedule.get("time"):
-            return "SIN PROGRAMAR", TEXT_DISABLED
+            return "Sin programar", TEXT_DISABLED
 
         days = schedule.get("days", [])
         day_names = ["LUN", "MAR", "MIE", "JUE", "VIE", "SAB", "DOM"]
@@ -430,8 +457,11 @@ class DeviceCardComponent(ctk.CTkFrame):
 
         def _worker():
             res = SystemService.check_machine_services(ip)
-            if self.winfo_exists():
-                self.after(0, lambda: self._apply_diag_results(res))
+            try:
+                if self.winfo_exists():
+                    self.after(0, lambda: self._apply_diag_results(res))
+            except (tk.TclError, RuntimeError):
+                pass
 
         threading.Thread(target=_worker, daemon=True).start()
 
@@ -475,7 +505,7 @@ class DeviceCardComponent(ctk.CTkFrame):
         self.lbl_status.configure(
             text=f"  {cfg['text']}",
             image=get_status_dot(cfg["dot"], 6),
-            fg_color=cfg["bg"],
+            fg_color="transparent",
             text_color=cfg["fg"]
         )
         if status == "online":

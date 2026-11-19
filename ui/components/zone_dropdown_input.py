@@ -20,6 +20,7 @@ from core.config import (
     TEXT_SECONDARY,
     UI_RADIUS,
 )
+from ui.components.icons import get_icon
 
 
 class ZoneDropdownInput(ctk.CTkFrame):
@@ -61,13 +62,12 @@ class ZoneDropdownInput(ctk.CTkFrame):
 
         self.btn_drop = ctk.CTkButton(
             self,
-            text="▾",
-            width=28,
+            text="",
+            image=get_icon("chevron_down", TEXT_SECONDARY, 12),
+            width=32,
             height=height,
-            font=FONTS["body_bold"],
             fg_color=BG_BTN_SECONDARY,
             hover_color=HOVER_SECONDARY,
-            text_color=TEXT_SECONDARY,
             border_color=BG_BORDER_BUTTON,
             border_width=1,
             corner_radius=UI_RADIUS,

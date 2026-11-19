@@ -33,7 +33,6 @@ from ui.views import (
     DeviceAddView,
     DeviceGridView,
     HeaderView,
-    SafetyFooterView,
     ZoneToolbarView,
 )
 from ui.views.modals import (
@@ -121,16 +120,9 @@ class WakeOnLanApp(ctk.CTk):
             on_wake_zone=self.handle_wake_zone,
             on_toggle_network=self.handle_toggle_network
         )
-        self.zone_toolbar_view.pack(fill=tk.X, padx=16, pady=(0, 6))
+        self.zone_toolbar_view.pack(fill=tk.X, padx=16, pady=(0, 8))
 
-        # D. Banner Inferior Permanente (EULA)
-        self.safety_footer_view = SafetyFooterView(
-            self,
-            on_open_terms=self.open_legal_terms
-        )
-        self.safety_footer_view.pack(side=tk.BOTTOM, fill=tk.X, padx=16, pady=(0, 8))
-
-        # E. Cuadrícula Scrollable de Dispositivos (Centro)
+        # D. Cuadrícula Scrollable de Dispositivos (Centro)
         self.device_grid_view = DeviceGridView(
             self,
             on_wake_device=self.handle_wake_device,
@@ -141,7 +133,7 @@ class WakeOnLanApp(ctk.CTk):
             on_launch_rdp=self.handle_launch_rdp,
             on_launch_ssh=self.handle_launch_ssh
         )
-        self.device_grid_view.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=16, pady=(0, 6))
+        self.device_grid_view.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=16, pady=(0, 14))
 
     def _init_services(self) -> None:
         # Cargar máquinas iniciales

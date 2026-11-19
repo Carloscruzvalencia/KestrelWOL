@@ -42,6 +42,7 @@ class AuditViewerModal(ctk.CTkToplevel):
         w, h = MODAL_SIZES["audit_viewer"]
         self.title("Registro de Auditoría y Trazabilidad (NIS 2 / ENS)")
         self.geometry(f"{w}x{h}")
+        self.minsize(w, h)
         self.configure(fg_color=BG_DARK)
 
         self.transient(parent)
@@ -85,19 +86,8 @@ class AuditViewerModal(ctk.CTkToplevel):
             command=self.load_log
         ).pack(side=tk.RIGHT, padx=14, pady=10)
 
-        self.txt_log = ctk.CTkTextbox(
-            self,
-            font=FONTS["mono_log"],
-            fg_color=BG_CONTAINER_DARK,
-            border_width=1,
-            border_color=BG_BORDER,
-            text_color=TEXT_SECONDARY,
-            corner_radius=UI_RADIUS
-        )
-        self.txt_log.pack(fill=tk.BOTH, expand=True, padx=16, pady=(0, 10))
-
         footer = ctk.CTkFrame(self, fg_color="transparent")
-        footer.pack(fill=tk.X, padx=16, pady=(0, 14))
+        footer.pack(side=tk.BOTTOM, fill=tk.X, padx=16, pady=(0, 14))
 
         ctk.CTkLabel(
             footer,
@@ -115,10 +105,22 @@ class AuditViewerModal(ctk.CTkToplevel):
             border_width=1,
             border_color=BG_BORDER_BUTTON,
             text_color=TEXT_SECONDARY,
+            width=0,
             height=30,
             corner_radius=UI_RADIUS,
             command=self.destroy
         ).pack(side=tk.RIGHT)
+
+        self.txt_log = ctk.CTkTextbox(
+            self,
+            font=FONTS["mono_log"],
+            fg_color=BG_CONTAINER_DARK,
+            border_width=1,
+            border_color=BG_BORDER,
+            text_color=TEXT_SECONDARY,
+            corner_radius=UI_RADIUS
+        )
+        self.txt_log.pack(fill=tk.BOTH, expand=True, padx=16, pady=(0, 10))
 
     def load_log(self) -> None:
         lines = self.audit.read_last_entries(max_lines=200)

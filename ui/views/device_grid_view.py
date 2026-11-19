@@ -56,8 +56,12 @@ class DeviceGridView(ctk.CTkScrollableFrame):
         self._current_cols = 2
         self._last_devices: List[Dict[str, Any]] = []
         self._show_network_info = False
+        self._resize_job: Optional[str] = None
 
-        self.bind("<Configure>", self._on_configure)
+        # En CTkScrollableFrame, enlazar al contenedor padre para leer el ancho real de ventana
+        # y evitar bucles infinitos de <Configure> cuando cambia la cuadrícula interna.
+        parent_frame = getattr(self, "_parent_frame", self)
+        parent_frame.bind("<Configure>", self._on_configure)
 
     def render_devices(self, devices: List[Dict[str, Any]]) -> None:
         """Limpia y reconstruye la cuadrícula con los dispositivos recibidos."""
@@ -127,7 +131,17 @@ class DeviceGridView(ctk.CTkScrollableFrame):
                 card.update_status(status)
 
     def _on_configure(self, event) -> None:
-        new_cols = 3 if event.width >= BREAKPOINT_THREE_COLUMNS else 2
+        if self._resize_job is not None:
+            try:
+                self.after_cancel(self._resize_job)
+            except Exception:
+                pass
+        width = event.width
+        self._resize_job = self.after(60, lambda w=width: self._apply_responsive_cols(w))
+
+    def _apply_responsive_cols(self, width: int) -> None:
+        self._resize_job = None
+        new_cols = 3 if width >= BREAKPOINT_THREE_COLUMNS else 2
         if new_cols != self._current_cols:
             self._current_cols = new_cols
             if self._last_devices:

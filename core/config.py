@@ -145,14 +145,14 @@ FONT_FAMILY_MAIN: str = "Segoe UI"
 FONT_FAMILY_MONO: str = "Consolas"
 
 FONTS = {
-    "title_main": (FONT_FAMILY_MAIN, 15, "bold"),
-    "title_section": (FONT_FAMILY_MAIN, 11, "bold"),
-    "title_card": (FONT_FAMILY_MAIN, 12, "bold"),
-    "body_bold": (FONT_FAMILY_MAIN, 10, "bold"),
-    "body_normal": (FONT_FAMILY_MAIN, 10),
-    "caption_bold": (FONT_FAMILY_MAIN, 9, "bold"),
-    "caption_normal": (FONT_FAMILY_MAIN, 9),
-    "micro": (FONT_FAMILY_MAIN, 8, "bold"),
+    "title_main": (FONT_FAMILY_MAIN, 16, "bold"),
+    "title_section": (FONT_FAMILY_MAIN, 12, "bold"),
+    "title_card": (FONT_FAMILY_MAIN, 13, "bold"),
+    "body_bold": (FONT_FAMILY_MAIN, 11, "bold"),
+    "body_normal": (FONT_FAMILY_MAIN, 11),
+    "caption_bold": (FONT_FAMILY_MAIN, 10, "bold"),
+    "caption_normal": (FONT_FAMILY_MAIN, 10),
+    "micro": (FONT_FAMILY_MAIN, 10, "bold"),
     "mono_data": (FONT_FAMILY_MONO, 11),
     "mono_log": (FONT_FAMILY_MONO, 10),
     "clock_large": (FONT_FAMILY_MAIN, 16, "bold"),
@@ -161,22 +161,23 @@ FONTS = {
 # ==============================================================================
 # 6. DIMENSIONES Y BREAKPOINTS RESPONSIVE
 # ==============================================================================
-WINDOW_DEFAULT_SIZE: str = "860x700"
-WINDOW_MIN_WIDTH: int = 780
+WINDOW_DEFAULT_SIZE: str = "1040x740"
+WINDOW_MIN_WIDTH: int = 820
 WINDOW_MIN_HEIGHT: int = 600
 
 # Responsive Columns Breakpoint
-BREAKPOINT_THREE_COLUMNS: int = 1320  # Si width >= 1320px -> 3 cols, sino 2 cols
+BREAKPOINT_THREE_COLUMNS: int = 1360  # Si width >= 1360px -> 3 cols, sino 2 cols
 
 # Dimensiones de Diálogos Modales
 MODAL_SIZES: Dict[str, Tuple[int, int]] = {
-    "legal_terms": (720, 620),
-    "safety_confirm": (560, 440),
-    "audit_viewer": (780, 480),
-    "device_edit": (420, 430),
-    "schedule": (520, 460),
-    "scanner": (750, 520),
-    "ignored_manager": (350, 450),
+    "legal_terms": (740, 640),
+    "safety_confirm": (680, 440),
+    "audit_viewer": (800, 500),
+    "device_edit": (480, 600),
+    "schedule": (540, 600),
+    "scanner": (760, 540),
+    "ignored_manager": (380, 460),
+    "remote_control": (600, 560),
 }
 
 # ==============================================================================

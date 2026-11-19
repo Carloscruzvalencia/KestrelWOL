@@ -50,6 +50,7 @@ class LegalTermsModal(ctk.CTkToplevel):
         w, h = MODAL_SIZES["legal_terms"]
         self.title("Términos de Uso, Seguridad Industrial y Exoneración Legal")
         self.geometry(f"{w}x{h}")
+        self.minsize(w, h)
         self.configure(fg_color=BG_DARK)
 
         self.transient(parent)
@@ -89,22 +90,8 @@ class LegalTermsModal(ctk.CTkToplevel):
             anchor="w"
         ).pack(anchor="w", padx=14, pady=(0, 10))
 
-        # Cuadro de texto de solo lectura
-        txt_box = ctk.CTkTextbox(
-            self,
-            font=FONTS["mono_log"],
-            fg_color=BG_CONTAINER_DARK,
-            border_width=1,
-            border_color=BG_BORDER,
-            text_color=TEXT_SECONDARY,
-            corner_radius=UI_RADIUS
-        )
-        txt_box.pack(fill=tk.BOTH, expand=True, padx=16, pady=(0, 10))
-        txt_box.insert("1.0", LEGAL_TERMS_FULL_TEXT)
-        txt_box.configure(state="disabled")
-
         footer = ctk.CTkFrame(self, fg_color="transparent")
-        footer.pack(fill=tk.X, padx=16, pady=(0, 14))
+        footer.pack(side=tk.BOTTOM, fill=tk.X, padx=16, pady=(0, 14))
 
         if self.is_first_run:
             self.chk_var = ctk.BooleanVar(value=False)
@@ -136,6 +123,7 @@ class LegalTermsModal(ctk.CTkToplevel):
                 border_width=1,
                 border_color=BG_BORDER_BUTTON,
                 text_color=TEXT_MUTED,
+                width=0,
                 height=30,
                 corner_radius=UI_RADIUS,
                 command=self._reject_and_exit
@@ -152,6 +140,7 @@ class LegalTermsModal(ctk.CTkToplevel):
                 border_width=1,
                 border_color=BG_BORDER_BUTTON,
                 text_color=TEXT_MUTED,
+                width=0,
                 height=30,
                 corner_radius=UI_RADIUS,
                 state="disabled",
@@ -168,10 +157,25 @@ class LegalTermsModal(ctk.CTkToplevel):
                 border_width=1,
                 border_color=BG_BORDER_BUTTON,
                 text_color=TEXT_SECONDARY,
+                width=0,
                 height=30,
                 corner_radius=UI_RADIUS,
                 command=self.destroy
             ).pack(side=tk.RIGHT)
+
+        # Cuadro de texto de solo lectura
+        txt_box = ctk.CTkTextbox(
+            self,
+            font=FONTS["mono_log"],
+            fg_color=BG_CONTAINER_DARK,
+            border_width=1,
+            border_color=BG_BORDER,
+            text_color=TEXT_SECONDARY,
+            corner_radius=UI_RADIUS
+        )
+        txt_box.pack(fill=tk.BOTH, expand=True, padx=16, pady=(0, 10))
+        txt_box.insert("1.0", LEGAL_TERMS_FULL_TEXT)
+        txt_box.configure(state="disabled")
 
     def _on_check_toggle(self) -> None:
         if hasattr(self, "btn_accept"):

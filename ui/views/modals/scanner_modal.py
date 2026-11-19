@@ -54,6 +54,7 @@ class ScannerModal(ctk.CTkToplevel):
         w, h = MODAL_SIZES["scanner"]
         self.title("Escáner de Red Local Activa")
         self.geometry(f"{w}x{h}")
+        self.minsize(w, h)
         self.configure(fg_color=BG_DARK)
 
         self.transient(parent)
@@ -96,6 +97,64 @@ class ScannerModal(ctk.CTkToplevel):
             corner_radius=UI_RADIUS,
             command=self.start_scan
         ).pack(side=tk.RIGHT, padx=14, pady=10)
+
+        footer = ctk.CTkFrame(self, fg_color="transparent")
+        footer.pack(side=tk.BOTTOM, fill=tk.X, padx=16, pady=(0, 14))
+
+        sec_btn_kwargs = {
+            "fg_color": BG_BTN_SECONDARY,
+            "hover_color": HOVER_SECONDARY,
+            "border_width": 1,
+            "border_color": BG_BORDER_BUTTON,
+            "text_color": TEXT_SECONDARY,
+            "width": 0,
+            "height": 30,
+            "corner_radius": UI_RADIUS,
+        }
+
+        ctk.CTkButton(
+            footer,
+            text="Cerrar",
+            font=FONTS["body_normal"],
+            command=self.destroy,
+            **sec_btn_kwargs
+        ).pack(side=tk.LEFT)
+
+        if self.on_open_ignored:
+            ctk.CTkButton(
+                footer,
+                text="Gestionar Ignorados",
+                image=get_icon("sliders", TEXT_SECONDARY, 14),
+                compound="left",
+                font=FONTS["caption_bold"],
+                command=self.on_open_ignored,
+                **sec_btn_kwargs
+            ).pack(side=tk.LEFT, padx=(8, 0))
+
+        ctk.CTkButton(
+            footer,
+            text="Ignorar Seleccionado",
+            image=get_icon("eye_off", TEXT_SECONDARY, 14),
+            compound="left",
+            font=FONTS["caption_bold"],
+            command=self._ignore_selected,
+            **sec_btn_kwargs
+        ).pack(side=tk.RIGHT, padx=(6, 0))
+
+        ctk.CTkButton(
+            footer,
+            text="Seleccionar Equipo",
+            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
+            compound="left",
+            font=FONTS["body_bold"],
+            fg_color=ACCENT_EMERALD,
+            hover_color=HOVER_EMERALD,
+            text_color=BUTTON_PRIMARY_TEXT,
+            width=0,
+            height=30,
+            corner_radius=UI_RADIUS,
+            command=self._use_selected
+        ).pack(side=tk.RIGHT)
 
         # Contenedor de la tabla
         tree_frame = ctk.CTkFrame(
@@ -148,62 +207,6 @@ class ScannerModal(ctk.CTkToplevel):
 
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y, padx=(0, 10), pady=10)
-
-        footer = ctk.CTkFrame(self, fg_color="transparent")
-        footer.pack(fill=tk.X, padx=16, pady=(0, 14))
-
-        sec_btn_kwargs = {
-            "fg_color": BG_BTN_SECONDARY,
-            "hover_color": HOVER_SECONDARY,
-            "border_width": 1,
-            "border_color": BG_BORDER_BUTTON,
-            "text_color": TEXT_SECONDARY,
-            "height": 30,
-            "corner_radius": UI_RADIUS,
-        }
-
-        ctk.CTkButton(
-            footer,
-            text="Cerrar",
-            font=FONTS["body_normal"],
-            command=self.destroy,
-            **sec_btn_kwargs
-        ).pack(side=tk.LEFT)
-
-        if self.on_open_ignored:
-            ctk.CTkButton(
-                footer,
-                text="Gestionar Ignorados",
-                image=get_icon("sliders", TEXT_SECONDARY, 14),
-                compound="left",
-                font=FONTS["caption_bold"],
-                command=self.on_open_ignored,
-                **sec_btn_kwargs
-            ).pack(side=tk.LEFT, padx=(8, 0))
-
-        ctk.CTkButton(
-            footer,
-            text="Ignorar Seleccionado",
-            image=get_icon("eye_off", TEXT_SECONDARY, 14),
-            compound="left",
-            font=FONTS["caption_bold"],
-            command=self._ignore_selected,
-            **sec_btn_kwargs
-        ).pack(side=tk.RIGHT, padx=(6, 0))
-
-        ctk.CTkButton(
-            footer,
-            text="Seleccionar Equipo",
-            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
-            compound="left",
-            font=FONTS["body_bold"],
-            fg_color=ACCENT_EMERALD,
-            hover_color=HOVER_EMERALD,
-            text_color=BUTTON_PRIMARY_TEXT,
-            height=30,
-            corner_radius=UI_RADIUS,
-            command=self._use_selected
-        ).pack(side=tk.RIGHT)
 
     def start_scan(self) -> None:
         for item in self.tree.get_children():

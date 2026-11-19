@@ -52,6 +52,7 @@ class ScheduleModal(ctk.CTkToplevel):
         w, h = MODAL_SIZES["schedule"]
         self.title(f"Programar Encendido: {machine.get('name')}")
         self.geometry(f"{w}x{h}")
+        self.minsize(w, h)
         self.configure(fg_color=BG_DARK)
 
         self.transient(parent)
@@ -96,6 +97,57 @@ class ScheduleModal(ctk.CTkToplevel):
             text_color=TEXT_MUTED,
             anchor="w"
         ).pack(anchor="w", padx=14, pady=(0, 10))
+
+        footer = ctk.CTkFrame(self, fg_color="transparent")
+        footer.pack(side=tk.BOTTOM, fill=tk.X, padx=16, pady=(0, 14))
+
+        ctk.CTkButton(
+            footer,
+            text="Cancelar",
+            font=FONTS["body_normal"],
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            width=0,
+            height=32,
+            corner_radius=UI_RADIUS,
+            command=self.destroy
+        ).pack(side=tk.LEFT)
+
+        if init_enabled:
+            ctk.CTkButton(
+                footer,
+                text="Desactivar",
+                image=get_icon("trash", TEXT_MUTED, 14),
+                compound="left",
+                font=FONTS["body_bold"],
+                fg_color=BG_BTN_SECONDARY,
+                hover_color=ACCENT_ROSE,
+                border_width=1,
+                border_color=BG_BORDER_BUTTON,
+                text_color=TEXT_MUTED,
+                width=0,
+                height=32,
+                corner_radius=UI_RADIUS,
+                command=self._disable
+            ).pack(side=tk.RIGHT, padx=(6, 0))
+
+        ctk.CTkButton(
+            footer,
+            text="Guardar Programación",
+            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
+            compound="left",
+            font=FONTS["body_bold"],
+            fg_color=ACCENT_EMERALD,
+            hover_color=HOVER_EMERALD,
+            text_color=BUTTON_PRIMARY_TEXT,
+            width=0,
+            height=32,
+            corner_radius=UI_RADIUS,
+            command=self._save
+        ).pack(side=tk.RIGHT)
 
         card = ctk.CTkFrame(
             self,
@@ -180,54 +232,6 @@ class ScheduleModal(ctk.CTkToplevel):
             col = idx % 2
             row = idx // 2
             cb.grid(row=row, column=col, sticky="w", padx=(0, 24), pady=4)
-
-        footer = ctk.CTkFrame(self, fg_color="transparent")
-        footer.pack(fill=tk.X, padx=16, pady=(0, 14))
-
-        ctk.CTkButton(
-            footer,
-            text="Cancelar",
-            font=FONTS["body_normal"],
-            fg_color=BG_BTN_SECONDARY,
-            hover_color=HOVER_SECONDARY,
-            border_width=1,
-            border_color=BG_BORDER_BUTTON,
-            text_color=TEXT_SECONDARY,
-            height=30,
-            corner_radius=UI_RADIUS,
-            command=self.destroy
-        ).pack(side=tk.LEFT)
-
-        if init_enabled:
-            ctk.CTkButton(
-                footer,
-                text="Desactivar",
-                image=get_icon("trash", TEXT_MUTED, 14),
-                compound="left",
-                font=FONTS["body_bold"],
-                fg_color=BG_BTN_SECONDARY,
-                hover_color=ACCENT_ROSE,
-                border_width=1,
-                border_color=BG_BORDER_BUTTON,
-                text_color=TEXT_MUTED,
-                height=30,
-                corner_radius=UI_RADIUS,
-                command=self._disable
-            ).pack(side=tk.RIGHT, padx=(6, 0))
-
-        ctk.CTkButton(
-            footer,
-            text="Guardar Programación",
-            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
-            compound="left",
-            font=FONTS["body_bold"],
-            fg_color=ACCENT_EMERALD,
-            hover_color=HOVER_EMERALD,
-            text_color=BUTTON_PRIMARY_TEXT,
-            height=30,
-            corner_radius=UI_RADIUS,
-            command=self._save
-        ).pack(side=tk.RIGHT)
 
     def _save(self) -> None:
         try:

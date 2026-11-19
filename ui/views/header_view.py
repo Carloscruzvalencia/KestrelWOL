@@ -94,6 +94,7 @@ class HeaderView(ctk.CTkFrame):
             "border_width": 1,
             "border_color": BG_BORDER_BUTTON,
             "text_color": TEXT_SECONDARY,
+            "width": 0,
             "height": 32,
             "corner_radius": UI_RADIUS,
         }
@@ -148,6 +149,7 @@ class HeaderView(ctk.CTkFrame):
             fg_color=ACCENT_EMERALD,
             hover_color=HOVER_EMERALD,
             text_color=BUTTON_PRIMARY_TEXT,
+            width=0,
             height=32,
             corner_radius=UI_RADIUS,
             command=lambda: self.on_wake_all() if self.on_wake_all else None

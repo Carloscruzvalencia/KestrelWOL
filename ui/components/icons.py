@@ -157,4 +157,12 @@ def get_icon(name: str, color: str = "#E2E8F0", size: int = 14) -> ctk.CTkImage:
         draw.ellipse(box(0.28, 0.20, 0.44, 0.40), fill=color)
         draw.ellipse(box(0.56, 0.60, 0.72, 0.80), fill=color)
 
+    elif name == "chevron_down":
+        draw.line([pt(0.22, 0.36), pt(0.50, 0.66), pt(0.78, 0.36)], fill=color, width=w)
+
+    elif name == "more":
+        r = 0.08
+        for cx in (0.24, 0.50, 0.76):
+            draw.ellipse(box(cx - r, 0.50 - r, cx + r, 0.50 + r), fill=color)
+
     return _finalize(img, size)

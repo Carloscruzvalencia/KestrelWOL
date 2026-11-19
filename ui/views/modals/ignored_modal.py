@@ -46,6 +46,7 @@ class IgnoredModal(ctk.CTkToplevel):
         w, h = MODAL_SIZES["ignored_manager"]
         self.title("IPs Ignoradas")
         self.geometry(f"{w}x{h}")
+        self.minsize(w, h)
         self.configure(fg_color=BG_DARK)
 
         self.transient(parent)
@@ -73,6 +74,39 @@ class IgnoredModal(ctk.CTkToplevel):
             text_color=TEXT_PRIMARY
         ).pack(side=tk.LEFT, padx=14, pady=10)
 
+        footer = ctk.CTkFrame(self, fg_color="transparent")
+        footer.pack(side=tk.BOTTOM, fill=tk.X, padx=16, pady=(0, 14))
+
+        ctk.CTkButton(
+            footer,
+            text="Cerrar",
+            font=FONTS["body_normal"],
+            fg_color=BG_BTN_SECONDARY,
+            hover_color=HOVER_SECONDARY,
+            border_width=1,
+            border_color=BG_BORDER_BUTTON,
+            text_color=TEXT_SECONDARY,
+            width=0,
+            height=30,
+            corner_radius=UI_RADIUS,
+            command=self.destroy
+        ).pack(side=tk.LEFT)
+
+        ctk.CTkButton(
+            footer,
+            text="Dejar de Ignorar",
+            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
+            compound="left",
+            font=FONTS["body_bold"],
+            fg_color=ACCENT_EMERALD,
+            hover_color=HOVER_EMERALD,
+            text_color=BUTTON_PRIMARY_TEXT,
+            width=0,
+            height=30,
+            corner_radius=UI_RADIUS,
+            command=self._unignore_selected
+        ).pack(side=tk.RIGHT)
+
         card = ctk.CTkFrame(
             self,
             fg_color=BG_CARD,
@@ -96,37 +130,6 @@ class IgnoredModal(ctk.CTkToplevel):
             activestyle="none"
         )
         self.listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
-        footer = ctk.CTkFrame(self, fg_color="transparent")
-        footer.pack(fill=tk.X, padx=16, pady=(0, 14))
-
-        ctk.CTkButton(
-            footer,
-            text="Cerrar",
-            font=FONTS["body_normal"],
-            fg_color=BG_BTN_SECONDARY,
-            hover_color=HOVER_SECONDARY,
-            border_width=1,
-            border_color=BG_BORDER_BUTTON,
-            text_color=TEXT_SECONDARY,
-            height=30,
-            corner_radius=UI_RADIUS,
-            command=self.destroy
-        ).pack(side=tk.LEFT)
-
-        ctk.CTkButton(
-            footer,
-            text="Dejar de Ignorar",
-            image=get_icon("check", BUTTON_PRIMARY_TEXT, 14),
-            compound="left",
-            font=FONTS["body_bold"],
-            fg_color=ACCENT_EMERALD,
-            hover_color=HOVER_EMERALD,
-            text_color=BUTTON_PRIMARY_TEXT,
-            height=30,
-            corner_radius=UI_RADIUS,
-            command=self._unignore_selected
-        ).pack(side=tk.RIGHT)
 
     def load_list(self) -> None:
         self.listbox.delete(0, tk.END)
